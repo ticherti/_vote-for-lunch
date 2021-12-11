@@ -26,12 +26,18 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 //        (access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"password"})
+//@ToString(callSuper = true, exclude = {"password"})
 public class User extends NamedEntity implements
 //        HasIdAndEmail,
+//todo check out why user has serializable in tj2 and not in tj1
         Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Schema(accessMode = Schema.AccessMode.READ_ONLY) // https://stackoverflow.com/a/28025008/548473
+    protected Integer id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
@@ -52,7 +58,7 @@ public class User extends NamedEntity implements
 
     @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()", updatable = false)
     @NotNull
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date registered = new Date();
 
     @Enumerated(EnumType.STRING)

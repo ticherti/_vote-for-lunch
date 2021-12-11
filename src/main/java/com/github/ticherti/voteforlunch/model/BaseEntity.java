@@ -2,6 +2,7 @@ package com.github.ticherti.voteforlunch.model;
 
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 //import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.util.ProxyUtils;
@@ -10,7 +11,7 @@ import org.springframework.data.util.ProxyUtils;
 
 import javax.persistence.*;
 
-//@MappedSuperclass
+@MappedSuperclass
 //  https://stackoverflow.com/a/6084701/548473
 //@Access(AccessType.FIELD)
 @Getter
@@ -34,7 +35,7 @@ public abstract class BaseEntity implements Persistable<Integer>
 //        return id;
 //    }
 
-//    @JsonIgnore
+    @JsonIgnore
     @Override
     public boolean isNew() {
         return id == null;

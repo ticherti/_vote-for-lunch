@@ -8,11 +8,12 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 //import javax.persistence.MappedSuperclass;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 
-//@MappedSuperclass
+@MappedSuperclass
 @Getter
 @Setter
 @NoArgsConstructor //(access = AccessLevel.PROTECTED)
