@@ -3,49 +3,27 @@ package com.github.ticherti.voteforlunch.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "votes")
 @Getter
 @Setter
+@ToString(callSuper = true)
 @NoArgsConstructor
+@Entity
+@Table(name = "votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "votes_user_date_unique_idx")})
 public class Vote extends BaseEntity {
-
+    //todo Check setting the LocalDate
     @Column(name = "date", columnDefinition = "date default current_date")
     private LocalDate date = LocalDate.now();
 
-    @ManyToOne
-    @Column(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @Column(name = "restaurant", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "restaurant", nullable = false)
     private Restaurant restaurant;
-
-    public Vote(LocalDate date, User user, Restaurant restaurant) {
-        this(null, date, user, restaurant);
-    }
-
-    public Vote(Integer id, LocalDate date, User user, Restaurant restaurant) {
-        super(id);
-        this.date = date;
-        this.user = user;
-        this.restaurant = restaurant;
-    }
-
-    @Override
-    public String toString() {
-        return "Vote{" +
-                "id=" + id +
-                ", date=" + date +
-                ", user=" + user.name +
-                ", restaurant=" + restaurant.name +
-                '}';
-    }
 }

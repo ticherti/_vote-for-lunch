@@ -7,7 +7,6 @@ import lombok.Setter;
 //import ru.javaops.topjava2.util.validation.NoHtml;
 
 import javax.persistence.Column;
-//import javax.persistence.MappedSuperclass;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

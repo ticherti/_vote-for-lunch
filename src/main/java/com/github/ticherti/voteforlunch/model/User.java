@@ -19,14 +19,31 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
+//Еще - объект AuthorizedUser будет хранится в сессии (про нее видео ниже) и для этого ему требуется сериализация
+// средствами Java. Это наследование его и всех классов-полей от маркерного интерфейса Serializable и необязательный,
+// но желательный serialVersionUID.
+//        Будьте внимательны в выпускных проектах с Serializable. Им нужно помечать ТОЛЬКО объекты, которые будут
+//        храниться в сессии
+//При некоторых условиях Tomcat сохраняет данные сессии и ему требуется возможность их сериализации,
+// поэтому объекты в сеcсии (и объекты, которые в них содержатся) обязательно должны имплементировать
+// интерфейс Serializable (в нашем случае AuthorizedUser и UserTo).
+//Все, что включает в себя сериализуемая сущность должно уметь сериализоваться, таким образом Если в Юзеере есть ЮзерТО,
+//то юзерТо тоже должно юбыть сериалайзебл
+//В прошлых выпусках я сам реализовывал интерфейс UserDetails. Сейчас я считаю проще отнаследовать AuthorizedUser
+// от org.springframework.security.core.userdetails.User, который уже имеет реализацию. А в UserService мы реализуем
+// UserDetailsService#loadUserByUsername и указываем этот сервис в spring-security.xml
+// <authentication-provider user-service-ref="userService">. Также есть его стандартные реализации, которые
+// использовались до нашей кастомной UserService, например jdbc-user-service использует реализацию JdbcUserDetailsManager
 
+//todo Spring Binding lesson 9. Check out also userTo
+//todo check out storing in DB email in lowercase
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 //        (access = AccessLevel.PROTECTED)
-//@ToString(callSuper = true, exclude = {"password"})
+@ToString(callSuper = true, exclude = {"password"})
 public class User extends NamedEntity implements
 //        HasIdAndEmail,
 //todo check out why user has serializable in tj2 and not in tj1
@@ -61,6 +78,8 @@ public class User extends NamedEntity implements
 //    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date registered = new Date();
 
+
+//    todo I bet it better will be not set but one role
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -71,25 +90,7 @@ public class User extends NamedEntity implements
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-    public User(User u) {
-        this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);
-    }
+//    todo Probably should have votes here. Also add  @OnDelete(action = OnDeleteAction.CASCADE)
 
-    public User(Integer id, String name, String email, String password, Role role, Role... roles) {
-        this(id, name, email, password, true, new Date(), EnumSet.of(role, roles));
-    }
-
-    public User(Integer id, String name, String email, String password, boolean enabled, Date registered, Collection<Role> roles) {
-        super(id, name);
-        this.email = email;
-        this.password = password;
-        this.enabled = enabled;
-        this.registered = registered;
-        setRoles(roles);
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
-    }
 }
 
