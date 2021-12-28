@@ -1,12 +1,12 @@
 package com.github.ticherti.voteforlunch.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import com.github.ticherti.voteforlunch.HasIdAndEmail;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.util.CollectionUtils;
-//import ru.javaops.topjava2.HasIdAndEmail;
-//import ru.javaops.topjava2.util.validation.NoHtml;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -15,9 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.Set;
 //Еще - объект AuthorizedUser будет хранится в сессии (про нее видео ниже) и для этого ему требуется сериализация
 // средствами Java. Это наследование его и всех классов-полей от маркерного интерфейса Serializable и необязательный,
@@ -44,10 +42,10 @@ import java.util.Set;
 @NoArgsConstructor
 //        (access = AccessLevel.PROTECTED)
 @ToString(callSuper = true, exclude = {"password"})
-public class User extends NamedEntity implements
-//        HasIdAndEmail,
+
 //todo check out why user has serializable in tj2 and not in tj1
-        Serializable {
+public class User extends NamedEntity implements HasIdAndEmail, Serializable {
+
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -79,7 +77,7 @@ public class User extends NamedEntity implements
     private Date registered = new Date();
 
 
-//    todo I bet it better will be not set but one role
+    //    todo I bet it better will be not set but one role
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

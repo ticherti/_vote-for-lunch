@@ -3,42 +3,46 @@ package com.github.ticherti.voteforlunch.web;
 import com.github.ticherti.voteforlunch.model.Restaurant;
 import com.github.ticherti.voteforlunch.service.RestaurantService;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import static com.github.ticherti.voteforlunch.util.ValidationUtil.assureIdConsistent;
+import static com.github.ticherti.voteforlunch.util.ValidationUtil.checkNew;
 
-@Controller
+@RestController
 @AllArgsConstructor
+@Slf4j
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestaurantController {
-    private static final Logger log = getLogger(AdminRestaurantController.class);
 
-    //    TODO CHANGE THAT FUNCTIONALITY. CHANGING SHOULD BE IN ADMIN FIELD
     static final String REST_URL = "/api/admin/restaurants";
-    private RestaurantService restaurantService;
+    private final RestaurantService restaurantService;
+
+//    Add validation like @NotNull and @Valid
 
     @GetMapping("/{id}")
     public Restaurant get(@PathVariable int id) {
         return restaurantService.get(id);
     }
 
-    @GetMapping("")
+    @GetMapping
     public List<Restaurant> getAll() {
         log.info("Getting all the restaurants");
         return restaurantService.getAll();
     }
 
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+    //    todo IF Entity move to TO then check out the checkNew() so it still has id
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Restaurant> createWithLocation(@RequestBody Restaurant restaurant) {
+        log.info("creating with location");
+        checkNew(restaurant);
         Restaurant created = restaurantService.create(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -47,10 +51,11 @@ public class AdminRestaurantController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @PutMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody Restaurant restaurant) {
-        restaurantService.update(restaurant);
+    public void update(@RequestBody Restaurant restaurant, @PathVariable int id) {
+        assureIdConsistent(restaurant, id);
+        restaurantService.update(restaurant, id);
     }
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
