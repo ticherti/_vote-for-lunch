@@ -8,8 +8,8 @@ public interface HasId {
     Integer getId();
 
     void setId(Integer id);
-//todo check this commented field
-//    @JsonIgnore
+
+    @JsonIgnore
     default boolean isNew() {
         return getId() == null;
     }

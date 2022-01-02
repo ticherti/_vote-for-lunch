@@ -24,7 +24,7 @@ public class MenuItem extends NamedEntity {
     @Column(name = "date", columnDefinition = "date default current_date")
     private LocalDate date = LocalDate.now();
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     @ToString.Exclude
     private Restaurant restaurant;

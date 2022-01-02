@@ -1,7 +1,10 @@
 package com.github.ticherti.voteforlunch.service;
 
+import com.github.ticherti.voteforlunch.HasId;
+import com.github.ticherti.voteforlunch.dto.MenuItemTO;
 import com.github.ticherti.voteforlunch.exceptions.NotBelongException;
 import com.github.ticherti.voteforlunch.exceptions.NotFoundException;
+import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
 import com.github.ticherti.voteforlunch.model.Restaurant;
 import com.github.ticherti.voteforlunch.repository.MenuItemRepository;
@@ -25,36 +28,41 @@ public class MenuItemService {
     private static final String NOTFOUND = "Menu item not found with id ";
     private final MenuItemRepository menuItemRepository;
     private final RestaurantRepository restaurantRepository;
+    private final MenuItemMapper mapper;
 
-    public MenuItem get(int restaurantId, int id) {
+    public MenuItemTO get(int restaurantId, int id) {
         MenuItem item = menuItemRepository.findById(id).orElseThrow(() -> new NotFoundException(NOTFOUND + id));
-        checkBelonging(item, restaurantId);
-        return item;
+        checkBelonging(item.id(), restaurantId);
+        return mapper.getDTO(item);
     }
 
     //todo find out where should it be sorted
-    public List<MenuItem> getAll(int restaurantId, LocalDate date) {
+    public List<MenuItemTO> getAll(int restaurantId, LocalDate date) {
         log.info("Getting all items");
-        return menuItemRepository.getAllByRestaurantAndDate(restaurantId, date);
+        return mapper.getDTO(menuItemRepository.getAllByRestaurantAndDate(restaurantId, date));
     }
 
     @Transactional
     @Modifying
-    public MenuItem create(int restaurantId, MenuItem item) {
+    public MenuItemTO create(int restaurantId, MenuItemTO itemTO) {
         log.info("Service creating menu item");
+        MenuItem item = mapper.getEntity(itemTO);
         item.setRestaurant(checkPresentRestaurant(restaurantId));
         item.setDate(LocalDate.now());
-        return menuItemRepository.save(item);
+        return mapper.getDTO(menuItemRepository.save(item));
     }
 
     //todo add here date option. Date for All comes from controller. Should be the same.
     @Transactional
     @Modifying
 //    todo Not sure if i need int id here in parameters
-    public void update(int restaurantId, MenuItem item, int id) {
-        checkBelonging(item, restaurantId);
+//    todo Complex problem. If send itemTO carries wrong id then no Exceptions's thrown, just right restaurantId from the path.
+    public void update(int restaurantId, MenuItemTO itemTO, int id) {
+        checkBelonging(itemTO.getRestaurantId(), restaurantId);
+        MenuItem item = mapper.getEntity(itemTO);
         item.setRestaurant(checkPresentRestaurant(restaurantId));
 //      todo This leads to resetting any old dish to current date. Probably should add checks for item date to be actual. Or not.
+//        todo Possible instead of letting - check if it's today's.
         item.setDate(LocalDate.now());
         menuItemRepository.save(item);
     }
@@ -74,8 +82,7 @@ public class MenuItemService {
                         new NotFoundException("The restaurant for this menu item is not found with id " + restaurantId));
     }
 
-    private void checkBelonging(MenuItem item, int restaurantId) {
-        int id = item.getRestaurant().getId();
+    private void checkBelonging(int id, int restaurantId) {
         if (id != restaurantId) {
             throw new NotBelongException(String.format("Menu item with id %s doesn't belong to the restaurant with id %s",
                     id, restaurantId));

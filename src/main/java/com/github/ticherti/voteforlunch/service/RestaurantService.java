@@ -1,6 +1,8 @@
 package com.github.ticherti.voteforlunch.service;
 
+import com.github.ticherti.voteforlunch.dto.RestaurantTO;
 import com.github.ticherti.voteforlunch.exceptions.NotFoundException;
+import com.github.ticherti.voteforlunch.mapper.RestaurantMapper;
 import com.github.ticherti.voteforlunch.model.Restaurant;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
@@ -21,37 +23,41 @@ public class RestaurantService {
     //todo change everywhere for @slf4j
     private static final String NOTFOUND = "Restaurant not found with id ";
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantMapper mapper;
 
-    public Restaurant get(int id) {
-        return restaurantRepository.findById(id)
+    public RestaurantTO get(int id) {
+        Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(NOTFOUND + id));
+        return mapper.getLazyDTO(restaurant);
     }
 
-    public Restaurant getWithMenu(int id) {
-        return restaurantRepository.findWithMenu(id, LocalDate.now())
-                .orElseThrow(() -> new NotFoundException(NOTFOUND + id));
+    public RestaurantTO getWithMenu(int id) {
+        return mapper.getEagerDTO(restaurantRepository.findWithMenu(id, LocalDate.now())
+                .orElseThrow(() -> new NotFoundException(NOTFOUND + id)));
     }
 
-    public List<Restaurant> getAll() {
+    public List<RestaurantTO> getAll() {
         log.info("getting all");
-        return restaurantRepository.findAll();
+        return mapper.getLazyDTO(restaurantRepository.findAll());
     }
 
-    public List<Restaurant> getAllWithMenus() {
-        return restaurantRepository.getAllWithMenus(LocalDate.now());
-    }
-
-    @Transactional
-    @Modifying
-    public Restaurant create(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+    public List<RestaurantTO> getAllWithMenus() {
+        return mapper.getEagerDTO(restaurantRepository.getAllWithMenus(LocalDate.now()));
     }
 
     @Transactional
     @Modifying
-    public void update(Restaurant restaurant, int id) {
-        Assert.notNull(id, "mealTo must not be null");
-        restaurantRepository.save(restaurant);
+    public RestaurantTO create(RestaurantTO restaurantTO) {
+        return mapper.getLazyDTO(restaurantRepository.save(mapper.getEntity(restaurantTO)));
+    }
+
+    @Transactional
+    @Modifying
+//    todo AGAIN check what s up with updated id
+    public void update(RestaurantTO restaurantTO, int id) {
+        Assert.notNull(restaurantTO, "Restaurant must not be null");
+        log.info("Updating restaurant with id " + restaurantTO.getId());
+        restaurantRepository.save(mapper.getEntity(restaurantTO));
     }
 
     //   todo Check out what's up with deleteById method in meal or users. Why add a query method to a repo

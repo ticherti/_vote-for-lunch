@@ -1,6 +1,6 @@
 package com.github.ticherti.voteforlunch.web;
 
-import com.github.ticherti.voteforlunch.model.Restaurant;
+import com.github.ticherti.voteforlunch.dto.RestaurantTO;
 import com.github.ticherti.voteforlunch.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,25 +25,25 @@ public class AdminRestaurantController {
     static final String REST_URL = "/api/admin/restaurants";
     private final RestaurantService restaurantService;
 
-//    Add validation like @NotNull and @Valid
+//    todo Add validation like @NotNull and @Valid
 
     @GetMapping("/{id}")
-    public Restaurant get(@PathVariable int id) {
+    public RestaurantTO get(@PathVariable int id) {
         return restaurantService.get(id);
     }
 
     @GetMapping
-    public List<Restaurant> getAll() {
+    public List<RestaurantTO> getAll() {
         log.info("Getting all the restaurants");
         return restaurantService.getAll();
     }
 
     //    todo IF Entity move to TO then check out the checkNew() so it still has id
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> createWithLocation(@RequestBody Restaurant restaurant) {
+    public ResponseEntity<RestaurantTO> createWithLocation(@RequestBody RestaurantTO restaurant) {
         log.info("creating with location");
         checkNew(restaurant);
-        Restaurant created = restaurantService.create(restaurant);
+        RestaurantTO created = restaurantService.create(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -53,7 +53,7 @@ public class AdminRestaurantController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody Restaurant restaurant, @PathVariable int id) {
+    public void update(@RequestBody RestaurantTO restaurant, @PathVariable int id) {
         assureIdConsistent(restaurant, id);
         restaurantService.update(restaurant, id);
     }

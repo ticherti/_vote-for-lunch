@@ -1,6 +1,6 @@
 package com.github.ticherti.voteforlunch.web;
 
-import com.github.ticherti.voteforlunch.model.MenuItem;
+import com.github.ticherti.voteforlunch.dto.MenuItemTO;
 import com.github.ticherti.voteforlunch.service.MenuItemService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,22 +28,22 @@ public class AdminMenuController {
 
     //todo Change entities for the TOs
     @GetMapping("/{id}")
-    public MenuItem get(@PathVariable int restaurantId, @PathVariable int id) {
+    public MenuItemTO get(@PathVariable int restaurantId, @PathVariable int id) {
         return menuItemService.get(restaurantId, id);
     }
 
     @GetMapping
-    public List<MenuItem> getAllByDate(@PathVariable int restaurantId) {
+    public List<MenuItemTO> getAllByDate(@PathVariable int restaurantId) {
 //        todo Add Sorting for lists
         log.info("Getting the today menu for the restaurant");
         return menuItemService.getAll(restaurantId, LocalDate.now());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MenuItem> createWithLocation(@PathVariable int restaurantId, @RequestBody MenuItem item) {
+    public ResponseEntity<MenuItemTO> createWithLocation(@PathVariable int restaurantId, @RequestBody MenuItemTO item) {
         log.info("Creating menu item");
         checkNew(item);
-        MenuItem created = menuItemService.create(restaurantId, item);
+        MenuItemTO created = menuItemService.create(restaurantId, item);
         log.info(created.getId().toString());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -55,7 +55,7 @@ public class AdminMenuController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
 //    todo No consistent check for id of restaurants here. Have in mind that there might be some in service like get()
-    public void update(@PathVariable int restaurantId, @RequestBody MenuItem item, @PathVariable int id) {
+    public void update(@PathVariable int restaurantId, @RequestBody MenuItemTO item, @PathVariable int id) {
         assureIdConsistent(item, id);
         menuItemService.update(restaurantId, item, id);
     }
