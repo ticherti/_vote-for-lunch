@@ -13,7 +13,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.github.ticherti.voteforlunch.util.ValidationUtil.checkNew;
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @Slf4j
 @RestController

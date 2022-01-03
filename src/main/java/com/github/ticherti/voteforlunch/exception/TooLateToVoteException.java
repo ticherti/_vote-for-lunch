@@ -1,4 +1,4 @@
-package com.github.ticherti.voteforlunch.exceptions;
+package com.github.ticherti.voteforlunch.exception;
 
 public class TooLateToVoteException extends RuntimeException{
     public TooLateToVoteException(String message){

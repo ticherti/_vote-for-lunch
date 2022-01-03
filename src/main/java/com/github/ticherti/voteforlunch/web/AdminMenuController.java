@@ -14,8 +14,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.github.ticherti.voteforlunch.util.ValidationUtil.assureIdConsistent;
-import static com.github.ticherti.voteforlunch.util.ValidationUtil.checkNew;
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @AllArgsConstructor

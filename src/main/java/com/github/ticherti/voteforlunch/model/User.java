@@ -1,12 +1,12 @@
 package com.github.ticherti.voteforlunch.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.ticherti.voteforlunch.HasIdAndEmail;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.github.ticherti.voteforlunch.util.validation.NoHtml;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -15,8 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 //Еще - объект AuthorizedUser будет хранится в сессии (про нее видео ниже) и для этого ему требуется сериализация
 // средствами Java. Это наследование его и всех классов-полей от маркерного интерфейса Serializable и необязательный,
 // но желательный serialVersionUID.
@@ -42,30 +41,23 @@ import java.util.Set;
 @NoArgsConstructor
 //        (access = AccessLevel.PROTECTED)
 @ToString(callSuper = true, exclude = {"password"})
-
-//todo check out why user has serializable in tj2 and not in tj1
 public class User extends NamedEntity implements HasIdAndEmail, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Schema(accessMode = Schema.AccessMode.READ_ONLY) // https://stackoverflow.com/a/28025008/548473
-    protected Integer id;
-
     @Column(name = "email", nullable = false, unique = true)
     @Email
     @NotBlank
     @Size(max = 100)
-//    @NoHtml   // https://stackoverflow.com/questions/17480809
+    @NoHtml   // https://stackoverflow.com/questions/17480809
     private String email;
 
     @Column(name = "password", nullable = false)
     @NotBlank
     @Size(min = 5, max = 100)
     // https://stackoverflow.com/a/12505165/548473
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
@@ -73,11 +65,9 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
 
     @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()", updatable = false)
     @NotNull
-//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date registered = new Date();
 
-
-    //    todo I bet it better will be not set but one role
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -88,7 +78,30 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-//    todo Probably should have votes here. Also add  @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Vote> votes;
 
+
+    public User(User u) {
+        this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);
+    }
+
+    public User(Integer id, String name, String email, String password, Role role, Role... roles) {
+        this(id, name, email, password, true, new Date(), EnumSet.of(role, roles));
+    }
+
+    public User(Integer id, String name, String email, String password, boolean enabled, Date registered, Collection<Role> roles) {
+        super(id, name);
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.registered = registered;
+        setRoles(roles);
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
+    }
 }
 

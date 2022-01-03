@@ -1,13 +1,12 @@
 package com.github.ticherti.voteforlunch.model;
 
-//import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
-public enum Role //implements GrantedAuthority
-{
+public enum Role implements GrantedAuthority {
     USER,
     ADMIN;
 
-//    @Override
+    @Override
     public String getAuthority() {
         //   https://stackoverflow.com/a/19542316/548473
         return "ROLE_" + name();

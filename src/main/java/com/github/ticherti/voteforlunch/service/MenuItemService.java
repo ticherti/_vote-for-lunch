@@ -1,9 +1,8 @@
 package com.github.ticherti.voteforlunch.service;
 
-import com.github.ticherti.voteforlunch.HasId;
 import com.github.ticherti.voteforlunch.dto.MenuItemTO;
-import com.github.ticherti.voteforlunch.exceptions.NotBelongException;
-import com.github.ticherti.voteforlunch.exceptions.NotFoundException;
+import com.github.ticherti.voteforlunch.exception.NotBelongException;
+import com.github.ticherti.voteforlunch.exception.NotFoundException;
 import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
 import com.github.ticherti.voteforlunch.model.Restaurant;

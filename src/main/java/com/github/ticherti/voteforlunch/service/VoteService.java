@@ -1,7 +1,7 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.VoteTO;
-import com.github.ticherti.voteforlunch.exceptions.TooLateToVoteException;
+import com.github.ticherti.voteforlunch.exception.TooLateToVoteException;
 import com.github.ticherti.voteforlunch.mapper.VoteMapper;
 import com.github.ticherti.voteforlunch.model.Vote;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
