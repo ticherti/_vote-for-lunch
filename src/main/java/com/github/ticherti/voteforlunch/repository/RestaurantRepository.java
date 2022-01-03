@@ -11,13 +11,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
-    //todo Add @Transactional(readOnly = true)
-//    todo Add Modifying
-//    todo Find out what's with r.id=?1 - 1???
-    //    EntityGraph.EntityGraphType.LOAD is for not doubling lines created by sql join
-//    todo so delete type if restaurant doesn't have more than one Eager list
+@Transactional(readOnly = true)
+public interface RestaurantRepository extends BaseRepository<Restaurant> {
+
     @EntityGraph(attributePaths = {"menuItems"})
     @Query("SELECT r FROM Restaurant r JOIN r.menuItems m WHERE r.id=:id AND m.date=:date")
     Optional<Restaurant> findWithMenu(int id, LocalDate date);
