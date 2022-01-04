@@ -29,14 +29,13 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.ch
 // TODO: cache only most requested data!
 @CacheConfig(cacheNames = "users")
 public class ProfileController extends AbstractUserController {
-    //    todo There are transactional methods. Check them, move @Transactional to service if possible
 
     static final String REST_URL = "/api/profile";
     private final UserService userService;
-    private final UserMapper mapper;
 
         @GetMapping
         public User get(@AuthenticationPrincipal AuthUser authUser) {
+            log.info("Get profile");
             return authUser.getUser();
         }
 
@@ -44,6 +43,7 @@ public class ProfileController extends AbstractUserController {
         @ResponseStatus(HttpStatus.NO_CONTENT)
         @CacheEvict(value = "users", allEntries = true)
         public void delete(@AuthenticationPrincipal AuthUser authUser) {
+            log.info("Deleting by auth user");
             userService.delete(authUser.id());
         }
 
@@ -61,16 +61,12 @@ public class ProfileController extends AbstractUserController {
 
         @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
         @ResponseStatus(HttpStatus.NO_CONTENT)
-//        This should be moved to service with auth user or be uncommented
-//        @Transactional
         @CacheEvict(allEntries = true)
         public void update(@RequestBody @Valid UserTO userTo, @AuthenticationPrincipal AuthUser authUser) {
+            log.info("Update {}", userTo);
             assureIdConsistent(userTo, authUser.id());
-//            TODO BIG if I can use authUser not here, but in service, I would like to move it there
-//            TODO CHECK UPDATED EMAIL
             User user = authUser.getUser();
-//            todo Change to be used only in service
-            userService.save(userService.updateFromTo(user, userTo));
+            userService.update(userTo, user);
         }
 
 }

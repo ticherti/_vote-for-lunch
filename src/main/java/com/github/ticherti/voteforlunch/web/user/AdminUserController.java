@@ -17,31 +17,30 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = AdminUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-// TODO: cache only most requested data!
+
 @CacheConfig(cacheNames = "users")
 public class AdminUserController extends AbstractUserController {
-//    todo There are transactional methods. Check them, move @Transactional to service if possible
     static final String REST_URL = "/api/admin/users";
     private final UserService userService;
 
-    @Override
     @GetMapping("/{id}")
-    public ResponseEntity<User> get(@PathVariable int id) {
-        return super.get(id);
+    public User get(@PathVariable int id) {
+        log.info("Getting a user with id {}", id);
+        return userService.get(id);
     }
 
-    @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(value = "users", allEntries = true)
     public void delete(@PathVariable int id) {
-        super.delete(id);
+        log.info("Deleting a user with id {}");
+        userService.delete(id);
     }
 
     @GetMapping
@@ -56,7 +55,7 @@ public class AdminUserController extends AbstractUserController {
     public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user) {
         log.info("create {}", user);
         checkNew(user);
-        User created = prepareAndSave(user);
+        User created = userService.save(user);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -68,26 +67,20 @@ public class AdminUserController extends AbstractUserController {
     @CacheEvict(allEntries = true)
     public void update(@Valid @RequestBody User user, @PathVariable int id) {
         log.info("update {} with id={}", user, id);
-        assureIdConsistent(user, id);
-        prepareAndSave(user);
+        userService.update(user, id);
     }
 
     @GetMapping("/by-email")
     public ResponseEntity<User> getByEmail(@RequestParam String email) {
         log.info("getByEmail {}", email);
-//        TODO BIG Either use this and check userSevice findings or leave like that
-//        return ResponseEntity.ok(userService.getByEmail(email));
         return ResponseEntity.of(userService.getByEmail(email));
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    todo Commented for a while
-//    @Transactional
     @CacheEvict(allEntries = true)
     public void enable(@PathVariable int id, @RequestParam boolean enabled) {
         log.info(enabled ? "enable {}" : "disable {}", id);
-        User user = userService.get(id).get();
-        user.setEnabled(enabled);
+        userService.enable(id, enabled);
     }
 }

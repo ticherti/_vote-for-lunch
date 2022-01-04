@@ -1,11 +1,10 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.UserTO;
+import com.github.ticherti.voteforlunch.exception.NotFoundException;
 import com.github.ticherti.voteforlunch.mapper.UserMapper;
-import com.github.ticherti.voteforlunch.model.Role;
 import com.github.ticherti.voteforlunch.model.User;
 import com.github.ticherti.voteforlunch.repository.UserRepository;
-import com.github.ticherti.voteforlunch.util.validation.Encoder;
 import com.github.ticherti.voteforlunch.web.AuthUser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,56 +13,87 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.github.ticherti.voteforlunch.config.WebSecurityConfig.PASSWORD_ENCODER;
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
-    //todo Encoder goes to WebSecurity config thus should be diceded to be public in some util Class, not here. Or not.
-    public static final PasswordEncoder PASSWORD_ENCODER = Encoder.PASSWORD_ENCODER;
+
     private final UserRepository userRepository;
     private final UserMapper mapper;
 
-    public Optional<User> get(int id) {
-        return userRepository.findById(id);
+    public User get(int id) {
+        log.info("Geting a user by id {}", id);
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     public Optional<User> getByEmail(String email) {
+        log.info("Geting a user by email {}", email);
         return userRepository.getByEmail(email);
     }
 
     public List<User> getAll() {
+        log.info("Geting all users");
         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "name", "email"));
     }
 
+    @Transactional
+    @Modifying
     public void delete(int id) {
+        log.info("Deleting a user with id {}", id);
         userRepository.deleteExisted(id);
     }
 
-    //    todo check out all the create-save methods throughout the project to be the same
     @Transactional
     @Modifying
     public User save(User user) {
+        log.info("Saving a user");
+        Assert.notNull(user, "User must not be null");
         return userRepository.save(prepareToSave(user));
     }
 
-    //todo statics should be upper. But this two are mapper responsibility
-    public static User createNewFromTo(UserTO userTO) {
-        return new User(null, userTO.getName(), userTO.getEmail().toLowerCase(), userTO.getPassword(), Role.USER);
+    @Transactional
+    @Modifying
+    public User save(UserTO userTO) {
+        log.info("Saving a user from TO");
+        Assert.notNull(userTO, "User must not be null");
+        return save(mapper.getNewEntity(userTO));
     }
 
-    public static User updateFromTo(User user, UserTO userTO) {
-        user.setName(userTO.getName());
-        user.setEmail(userTO.getEmail().toLowerCase());
-        user.setPassword(userTO.getPassword());
-        return user;
+    @Transactional
+    @Modifying
+    public void update(UserTO userTO, User user) {
+        log.info("Updating a user from TO");
+        Assert.notNull(userTO, "User must not be null");
+        Assert.notNull(user, "User must not be null");
+        userRepository.save(prepareToSave(mapper.updateFromTo(user, userTO)));
+    }
+
+    @Transactional
+    @Modifying
+    public void update(User user, int id) {
+        log.info("Updating a user with id {}", id);
+        Assert.notNull(user, "User must not be null");
+        assureIdConsistent(user, id);
+        userRepository.save(prepareToSave(user));
+    }
+
+    @Transactional
+    @Modifying
+    public void enable(int id, boolean enabled) {
+        log.info("Enabling {}", enabled);
+        User user = get(id);
+        user.setEnabled(enabled);
     }
 
     @Override
@@ -74,7 +104,7 @@ public class UserService implements UserDetailsService {
                 () -> new UsernameNotFoundException("User '" + email + "' was not found")));
     }
 
-    private static User prepareToSave(User user) {
+    private User prepareToSave(User user) {
         user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
         user.setEmail(user.getEmail().toLowerCase());
         return user;
