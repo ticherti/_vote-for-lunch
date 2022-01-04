@@ -2,35 +2,12 @@ package com.github.ticherti.voteforlunch.util.validation;
 
 import com.github.ticherti.voteforlunch.HasId;
 import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
-import com.github.ticherti.voteforlunch.exception.NotFoundException;
 import lombok.experimental.UtilityClass;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 
 @UtilityClass
 public class ValidationUtil {
-
-    public static <T> T checkNotFoundWithId(T object, int id) {
-        checkNotFoundWithId(object != null, id);
-        return object;
-    }
-
-    public static void checkNotFoundWithId(boolean found, int id) {
-        checkNotFound(found, "id=" + id);
-    }
-
-    public static <T> T checkNotFound(T object, String msg) {
-        checkNotFound(object != null, msg);
-        return object;
-    }
-
-    public static void checkNotFound(boolean found, String msg) {
-        if (!found) {
-            throw new NotFoundException("Not found entity with " + msg);
-        }
-    }
-//    Check upper methods if i need them
-//    _______________
 
     public static void checkNew(HasId bean) {
         if (!bean.isNew()) {

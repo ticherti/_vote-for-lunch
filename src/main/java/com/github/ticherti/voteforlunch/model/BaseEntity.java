@@ -1,40 +1,29 @@
 package com.github.ticherti.voteforlunch.model;
 
-//import com.fasterxml.jackson.annotation.JsonIgnore;
 //import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.ticherti.voteforlunch.HasId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.util.ProxyUtils;
 import org.springframework.util.Assert;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 @MappedSuperclass
 //  https://stackoverflow.com/a/6084701/548473
-//@Access(AccessType.FIELD)
+@Access(AccessType.FIELD)
 @Getter
 @Setter
-@NoArgsConstructor
-//        (access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-//        (access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity implements Persistable<Integer>, HasId {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @Schema(accessMode = Schema.AccessMode.READ_ONLY) // https://stackoverflow.com/a/28025008/548473
     protected Integer id;
 
-    // doesn't work for hibernate lazy proxy
-//    todo Heavily get into this
     public int id() {
         Assert.notNull(id, "Entity must have id");
         return id;
