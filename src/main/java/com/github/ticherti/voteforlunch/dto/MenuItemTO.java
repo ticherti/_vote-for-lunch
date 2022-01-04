@@ -1,17 +1,23 @@
 package com.github.ticherti.voteforlunch.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
+@RequiredArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MenuItemTO extends NamedTO {
+public final class MenuItemTO extends NamedTO {
 
-    private int price;
+    @NotNull
+    private final int price;
 
-    private LocalDate date = LocalDate.now();
+    private final LocalDate date;
 
-    private int restaurantId;
+    private final int restaurantId;
 }
