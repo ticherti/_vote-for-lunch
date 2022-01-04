@@ -42,8 +42,9 @@ public class ProfileController extends AbstractUserController {
 
         @DeleteMapping
         @ResponseStatus(HttpStatus.NO_CONTENT)
+        @CacheEvict(value = "users", allEntries = true)
         public void delete(@AuthenticationPrincipal AuthUser authUser) {
-            super.delete(authUser.id());
+            userService.delete(authUser.id());
         }
 
         @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -52,13 +53,11 @@ public class ProfileController extends AbstractUserController {
         public ResponseEntity<User> register(@Valid @RequestBody UserTO userTo) {
             log.info("register {}", userTo);
             checkNew(userTo);
-//            todo I would like this to be simple and be mapped only in service
-            User created = prepareAndSave(userService.createNewFromTo(userTo));
+            User created = userService.save(userTo);
             URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL).build().toUri();
             return ResponseEntity.created(uriOfNewResource).body(created);
         }
-
 
         @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
         @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -68,8 +67,10 @@ public class ProfileController extends AbstractUserController {
         public void update(@RequestBody @Valid UserTO userTo, @AuthenticationPrincipal AuthUser authUser) {
             assureIdConsistent(userTo, authUser.id());
 //            TODO BIG if I can use authUser not here, but in service, I would like to move it there
+//            TODO CHECK UPDATED EMAIL
             User user = authUser.getUser();
-            prepareAndSave(userService.updateFromTo(user, userTo));
+//            todo Change to be used only in service
+            userService.save(userService.updateFromTo(user, userTo));
         }
 
 }

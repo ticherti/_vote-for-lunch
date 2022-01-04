@@ -1,7 +1,13 @@
 package com.github.ticherti.voteforlunch.exception;
 
-public class TooLateToVoteException extends RuntimeException{
-    public TooLateToVoteException(String message){
-        super(message);
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+public class TooLateToVoteException extends RuntimeException {
+
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    public TooLateToVoteException(LocalTime time) {
+        super("Too late to vote at " + time.format(DATE_TIME_FORMATTER));
     }
 }

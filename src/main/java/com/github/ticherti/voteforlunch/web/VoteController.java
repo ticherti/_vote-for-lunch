@@ -4,54 +4,63 @@ import com.github.ticherti.voteforlunch.dto.VoteTO;
 import com.github.ticherti.voteforlunch.service.VoteService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = VoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class VoteController {
-    //todo Must be authentication check by user. Votes go with auth user id
-//    TODO BIG User should be returned with or withoud votes. How a user can get his today vote?
+
     static final String REST_URL = "/api/votes";
+    static final String USER_URL = "/user";
     private final VoteService voteService;
 
-    //    todo Get 1 should be renamed and only for today and auth user. Change mapping
-    @GetMapping("/user/{id}")
-    public VoteTO getByUserToday(@PathVariable int id) {
-        return voteService.get(id, LocalDate.now());
+    @GetMapping(USER_URL)
+    public VoteTO getByUserAndDate(@AuthenticationPrincipal AuthUser authUser,
+                                   @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        log.info("Getting a user's vote");
+        return voteService.get(authUser.id(), getDate(date));
     }
 
-    @GetMapping("/all")
-    public List<VoteTO> getAllByDate() {
-        return voteService.getAllByDate(LocalDate.now());
+    @GetMapping("/today")
+    public List<VoteTO> getAllByDate(@RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        log.info("Getting all votes");
+        return voteService.getAllByDate(getDate(date));
     }
 
     @GetMapping("/{restaurantId}")
-    public List<VoteTO> getAllByRestaurantAndDate(@PathVariable int restaurantId) {
-        return voteService.getAllByRestaurantAndDate(restaurantId, LocalDate.now());
+    public List<VoteTO> getAllByRestaurantAndDate(
+            @NotNull @PathVariable int restaurantId,
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        log.info("Getting all votes by restaurant id {}", restaurantId);
+        return voteService.getAllByRestaurantAndDate(restaurantId, date);
     }
 
     @PostMapping
-    public ResponseEntity<VoteTO> save(@RequestBody VoteTO voteTO) {
-//        todo this one should be changed to be send by Auth user
-
-        log.info("creating with location");
-        checkNew(voteTO);
-        VoteTO created = voteService.create(voteTO);
+    public ResponseEntity<VoteTO> createWithLocation(@Valid @RequestBody VoteTO voteTO, @AuthenticationPrincipal AuthUser authUser) {
+        log.info("Creating with location");
+        VoteTO created = voteService.save(voteTO, authUser.id());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
+                .path(REST_URL + USER_URL)
                 .buildAndExpand(created.getId()).toUri();
 
         return ResponseEntity.created(uriOfNewResource).body(created);
+    }
+
+    private LocalDate getDate(LocalDate date) {
+        return (date == null) ? LocalDate.now() : date;
     }
 }

@@ -9,8 +9,10 @@ import com.github.ticherti.voteforlunch.repository.UserRepository;
 import com.github.ticherti.voteforlunch.repository.VoteRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,7 +23,7 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 public class VoteService {
-//    todo minor insert deadline into properties
+    //    todo minor insert deadline into properties
     private static final LocalTime DEADLINE_TIME = LocalTime.of(11, 00);
 
     private final VoteRepository voteRepository;
@@ -30,49 +32,38 @@ public class VoteService {
     private final VoteMapper mapper;
 
     public VoteTO get(int id, LocalDate date) {
-//        todo Optional here. Decide checking. Now it's get. Check nulls
+        log.info("Service get id {}, date {}", id, date);
         return mapper.getDTO(voteRepository.getByDateAndUserId(id, date));
     }
 
     public List<VoteTO> getAllByDate(LocalDate date) {
+        log.info("Service get all by date {}", date);
         return mapper.getDTO(voteRepository.getAllByDate(date));
     }
 
     public List<VoteTO> getAllByRestaurantAndDate(int retaurantId, LocalDate date) {
+        log.info("Service get all by restaurant id {}, date {}", retaurantId, date);
         return mapper.getDTO(voteRepository.getAllByDateAndRestaurantId(retaurantId, date));
     }
 
-    public VoteTO create(VoteTO voteTO) {
-//        todo BIG add auth user id here. WTF
-//        todo minor. Format time to string
+    @Transactional
+    @Modifying
+    public VoteTO save(VoteTO voteTO, int userId) {
+        Assert.notNull(voteTO, "Vote mustn't be null");
         final LocalTime currentTime = LocalTime.now();
-        int id = voteTO.getUserId();
+        log.info("Service save. Time is {}", currentTime);
+
         Vote vote = mapper.getEntity(voteTO);
-        Vote existed = voteRepository.getByDateAndUserId(id, LocalDate.now());
-        if (existed!=null) {
-            if (currentTime.isAfter(DEADLINE_TIME)){
-                throw new TooLateToVoteException(currentTime.toString());
+        Vote existed = voteRepository.getByDateAndUserId(userId, LocalDate.now());
+        if (existed != null) {
+            if (currentTime.isAfter(DEADLINE_TIME)) {
+                throw new TooLateToVoteException(currentTime);
             }
             vote.setId(existed.getId());
         }
-
-//            todo Here. Insert auth user. Clean the userRepo field
-        vote.setUser(userRepository.getById(id));
+        vote.setUser(userRepository.getById(userId));
         vote.setRestaurant(restaurantRepository.getById(voteTO.getRestaurantId()));
 
         return mapper.getDTO(voteRepository.save(vote));
     }
-//todo add User id here
-//    todo CHECK ID right for user
-//    public Vote getByDate(LocalDate date) {
-//    return voteRepository.getById(date);
-//    }
-//todo add User here
-//    public List<Vote> getAllByDate(LocalDate date) {
-//        return voteRepository.getAllByDateAndUserId(date, 1);
-//    }
-//
-//    public List<Vote> getAllByDate(LocalDate date) {
-//        return voteRepository.getAllByDateAndRestaurantId(date);
-//    }
 }
