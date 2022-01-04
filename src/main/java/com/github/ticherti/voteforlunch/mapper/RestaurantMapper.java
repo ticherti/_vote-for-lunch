@@ -11,7 +11,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RestaurantMapper {
-//todo slight problem with not setting restaurant id for menuitems
+
     Restaurant getEntity(RestaurantTO restaurantTO);
 
     @Mappings({@Mapping(target = "menuItems", ignore = true)})
@@ -23,12 +23,10 @@ public interface RestaurantMapper {
         if (restaurants == null) {
             return null;
         }
-
         List<RestaurantTO> list = new ArrayList<RestaurantTO>(restaurants.size());
         for (Restaurant restaurant : restaurants) {
             list.add(getLazyDTO(restaurant));
         }
-
         return list;
     }
 
@@ -36,12 +34,10 @@ public interface RestaurantMapper {
         if (restaurants == null) {
             return null;
         }
-
         List<RestaurantTO> list = new ArrayList<RestaurantTO>(restaurants.size());
         for (Restaurant restaurant : restaurants) {
             list.add(getEagerDTO(restaurant));
         }
-
         return list;
     }
 }

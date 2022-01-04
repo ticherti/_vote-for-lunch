@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @RestController
@@ -24,8 +24,6 @@ public class AdminRestaurantController {
 
     static final String REST_URL = "/api/admin/restaurants";
     private final RestaurantService restaurantService;
-
-//    todo Add validation like @NotNull and @Valid
 
     @GetMapping("/{id}")
     public RestaurantTO get(@PathVariable int id) {
@@ -38,12 +36,11 @@ public class AdminRestaurantController {
         return restaurantService.getAll();
     }
 
-    //    todo IF Entity move to TO then check out the checkNew() so it still has id
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RestaurantTO> createWithLocation(@RequestBody RestaurantTO restaurant) {
+    public ResponseEntity<RestaurantTO> createWithLocation(@Valid @RequestBody RestaurantTO restaurant) {
         log.info("creating with location");
         checkNew(restaurant);
-        RestaurantTO created = restaurantService.create(restaurant);
+        RestaurantTO created = restaurantService.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -53,14 +50,15 @@ public class AdminRestaurantController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody RestaurantTO restaurant, @PathVariable int id) {
-        assureIdConsistent(restaurant, id);
+    public void update(@Valid @RequestBody RestaurantTO restaurant, @PathVariable int id) {
+        log.info("Updating a restaurant with id {}", id);
         restaurantService.update(restaurant, id);
     }
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
+        log.info("Deleting a restaurant with id {}", id);
         restaurantService.delete(id);
     }
 }

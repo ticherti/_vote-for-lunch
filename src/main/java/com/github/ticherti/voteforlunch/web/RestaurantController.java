@@ -23,23 +23,25 @@ public class RestaurantController {
 
     @GetMapping("/{id}")
     public RestaurantTO get(@PathVariable int id) {
+        log.info("Getting a restaurant with id {}", id);
         return restaurantService.get(id);
     }
 
-    @GetMapping("/{id}/menu")
+    @GetMapping("/{id}/menus")
     public RestaurantTO getWithMenu(@PathVariable int id) {
+        log.info("Getting a restaurant with id {} with menu", id);
         return restaurantService.getWithMenu(id);
     }
 
     @GetMapping
     public List<RestaurantTO> getAll() {
+        log.info("Getting all restaurants");
         return restaurantService.getAll();
     }
 
     @GetMapping("/menus")
     public List<RestaurantTO> getAllWithMenus() {
-        log.info("Getting Restaurants with menus");
-
+        log.info("Getting restaurants with menus");
         return restaurantService.getAllWithMenus();
     }
 }

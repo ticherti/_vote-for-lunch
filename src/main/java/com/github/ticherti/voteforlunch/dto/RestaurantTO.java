@@ -1,6 +1,9 @@
 package com.github.ticherti.voteforlunch.dto;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.Value;
 
 import java.util.List;
 
@@ -9,5 +12,6 @@ import java.util.List;
 @ToString(callSuper = true)
 public class RestaurantTO extends NamedTO {
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<MenuItemTO> menuItems;
 }
