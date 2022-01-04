@@ -9,16 +9,17 @@ import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "menuitems", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"},
-        name = "menuitems_unique_restaurant_datetime_name_idx")})
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
+@Slf4j
+@Entity
+@Table(name = "menuitems", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"},
+        name = "menuitems_unique_restaurant_datetime_name_idx")})
 public class MenuItem extends NamedEntity {
 
-    @Column(name = "price", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "price", nullable = false)
     private int price;
 
     @Column(name = "date", columnDefinition = "date default current_date")

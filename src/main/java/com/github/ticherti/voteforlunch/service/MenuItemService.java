@@ -1,67 +1,69 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.MenuItemTO;
-import com.github.ticherti.voteforlunch.exception.NotBelongException;
 import com.github.ticherti.voteforlunch.exception.NotFoundException;
+import com.github.ticherti.voteforlunch.exception.TooLateToModifyException;
 import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
-import com.github.ticherti.voteforlunch.model.Restaurant;
 import com.github.ticherti.voteforlunch.repository.MenuItemRepository;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
 public class MenuItemService {
-    //    todo Add consistency checks
     private static final String NOTFOUND = "Menu item not found with id ";
     private final MenuItemRepository menuItemRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemMapper mapper;
 
     public MenuItemTO get(int restaurantId, int id) {
-        MenuItem item = menuItemRepository.findById(id).orElseThrow(() -> new NotFoundException(NOTFOUND + id));
-        checkBelonging(item.id(), restaurantId);
-        return mapper.getDTO(item);
+        log.info("Getting an item for the restaurant {} with id", restaurantId, id);
+        return mapper.getDTO(findByRestaurant(restaurantId, id));
     }
 
-    //todo find out where should it be sorted
-    public List<MenuItemTO> getAll(int restaurantId, LocalDate date) {
+    public List<MenuItemTO> getAll(int restaurantId, @Nullable LocalDate date) {
         log.info("Getting all items");
+        date = (date == null) ? LocalDate.now() : date;
         return mapper.getDTO(menuItemRepository.getAllByRestaurantAndDate(restaurantId, date));
     }
 
     @Transactional
     @Modifying
-    public MenuItemTO create(int restaurantId, MenuItemTO itemTO) {
+    public MenuItemTO save(int restaurantId, MenuItemTO itemTO) {
         log.info("Service creating menu item");
+        Assert.notNull(itemTO, "Item must not be null");
+
         MenuItem item = mapper.getEntity(itemTO);
-        item.setRestaurant(checkPresentRestaurant(restaurantId));
+        item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
         item.setDate(LocalDate.now());
         return mapper.getDTO(menuItemRepository.save(item));
     }
 
-    //todo add here date option. Date for All comes from controller. Should be the same.
     @Transactional
     @Modifying
-//    todo Not sure if i need int id here in parameters
-//    todo Complex problem. If send itemTO carries wrong id then no Exceptions's thrown, just right restaurantId from the path.
     public void update(int restaurantId, MenuItemTO itemTO, int id) {
-        checkBelonging(itemTO.getRestaurantId(), restaurantId);
+        log.info("Updating menuitem with id {}", id);
+        Assert.notNull(itemTO, "Item must not be null");
+        assureIdConsistent(itemTO, id);
+        findByRestaurant(restaurantId, id);
+
         MenuItem item = mapper.getEntity(itemTO);
-        item.setRestaurant(checkPresentRestaurant(restaurantId));
-//      todo This leads to resetting any old dish to current date. Probably should add checks for item date to be actual. Or not.
-//        todo Possible instead of letting - check if it's today's.
+        checkNotLate(item);
+        item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
         item.setDate(LocalDate.now());
         menuItemRepository.save(item);
     }
@@ -69,22 +71,20 @@ public class MenuItemService {
     @Transactional
     @Modifying
     public void delete(int restaurantId, int id) {
-        get(restaurantId, id);
-        menuItemRepository.deleteById(id);
+        MenuItem item = findByRestaurant(id, restaurantId);
+        checkNotLate(item);
+        menuItemRepository.deleteExisted(id);
     }
 
-    //todo Probably should move it to repos layer. Kind of double responsibility (Restaurant)
-    @Transactional(propagation = Propagation.MANDATORY)
-    Restaurant checkPresentRestaurant(int restaurantId) {
-        return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() ->
-                        new NotFoundException("The restaurant for this menu item is not found with id " + restaurantId));
+    private MenuItem findByRestaurant(int restaurantId, int id) {
+        return menuItemRepository
+                .getByRestaurant(id, restaurantId)
+                .orElseThrow(() -> new NotFoundException(NOTFOUND + id));
     }
 
-    private void checkBelonging(int id, int restaurantId) {
-        if (id != restaurantId) {
-            throw new NotBelongException(String.format("Menu item with id %s doesn't belong to the restaurant with id %s",
-                    id, restaurantId));
+    private void checkNotLate(MenuItem item) {
+        if (item.getDate().isBefore(LocalDate.now())) {
+            throw new TooLateToModifyException("The item is not fresh enough too touch it");
         }
     }
 }

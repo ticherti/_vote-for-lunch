@@ -1,15 +1,13 @@
 package com.github.ticherti.voteforlunch.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Data
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public final class MenuItemTO extends NamedTO {
