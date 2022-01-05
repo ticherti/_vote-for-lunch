@@ -6,8 +6,6 @@ import com.github.ticherti.voteforlunch.service.UserService;
 import com.github.ticherti.voteforlunch.web.AuthUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +23,6 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.ch
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = ProfileController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-@CacheConfig(cacheNames = "users")
 public class ProfileController extends AbstractUserController {
 
     static final String REST_URL = "/api/profile";
@@ -39,7 +36,6 @@ public class ProfileController extends AbstractUserController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(value = "users", allEntries = true)
     public void delete(@AuthenticationPrincipal AuthUser authUser) {
         log.info("Deleting by auth user");
         userService.delete(authUser.id());
@@ -47,7 +43,6 @@ public class ProfileController extends AbstractUserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @CacheEvict(allEntries = true)
     public ResponseEntity<User> register(@Valid @RequestBody UserTO userTo) {
         log.info("register {}", userTo);
         checkNew(userTo);
@@ -59,7 +54,6 @@ public class ProfileController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(allEntries = true)
     public void update(@RequestBody @Valid UserTO userTo, @AuthenticationPrincipal AuthUser authUser) {
         log.info("Update {}", userTo);
         assureIdConsistent(userTo, authUser.id());

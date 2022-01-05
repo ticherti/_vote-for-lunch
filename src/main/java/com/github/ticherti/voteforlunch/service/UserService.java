@@ -32,9 +32,9 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
 
-    public User get(int id) {
+    public Optional<User> get(int id) {
         log.info("Geting a user by id {}", id);
-        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        return userRepository.findById(id);
     }
 
     public Optional<User> getByEmail(String email) {
@@ -92,7 +92,7 @@ public class UserService implements UserDetailsService {
     @Modifying
     public void enable(int id, boolean enabled) {
         log.info("Enabling {}", enabled);
-        User user = get(id);
+        User user = userRepository.getById(id);
         user.setEnabled(enabled);
     }
 
