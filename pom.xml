@@ -20,6 +20,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <mapstruck.version>1.4.2.Final</mapstruck.version>
         <mapstruck.lombock.version>0.2.0</mapstruck.lombock.version>
+        <springdoc.version>1.5.10</springdoc.version>
     </properties>
     <dependencies>
         <dependency>
@@ -52,11 +53,21 @@
             <scope>test</scope>
         </dependency>
 
-<!--        Security-->
-        		<dependency>
-        			<groupId>org.springframework.boot</groupId>
-        			<artifactId>spring-boot-starter-security</artifactId>
-        		</dependency>
+        <!--cache-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!--Security-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -97,6 +108,17 @@
             <version>1.14.2</version>
         </dependency>
 
+        <!--Swagger-->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-security</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

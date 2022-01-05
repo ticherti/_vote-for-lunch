@@ -9,6 +9,8 @@ import com.github.ticherti.voteforlunch.repository.MenuItemRepository;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.as
 @Service
 @AllArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = "restaurants")
 @Transactional(readOnly = true)
 public class MenuItemService {
     private static final String NOTFOUND = "Menu item not found with id ";
@@ -43,6 +46,7 @@ public class MenuItemService {
 
     @Transactional
     @Modifying
+    @CacheEvict(allEntries = true)
     public MenuItemTO save(int restaurantId, MenuItemTO itemTO) {
         log.info("Service creating menu item");
         Assert.notNull(itemTO, "Item must not be null");
@@ -55,6 +59,7 @@ public class MenuItemService {
 
     @Transactional
     @Modifying
+    @CacheEvict(allEntries = true)
     public void update(int restaurantId, MenuItemTO itemTO, int id) {
         log.info("Updating menuitem with id {}", id);
         Assert.notNull(itemTO, "Item must not be null");
@@ -69,6 +74,7 @@ public class MenuItemService {
 
     @Transactional
     @Modifying
+    @CacheEvict(allEntries = true)
     public void delete(int restaurantId, int id) {
         MenuItem item = findByRestaurant(restaurantId, id);
         checkNotLate(item);

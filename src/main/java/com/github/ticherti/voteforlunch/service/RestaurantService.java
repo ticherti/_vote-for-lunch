@@ -7,6 +7,9 @@ import com.github.ticherti.voteforlunch.model.Restaurant;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.as
 @Service
 @AllArgsConstructor
 @Slf4j
+@CacheConfig(cacheNames = "restaurants")
 @Transactional(readOnly = true)
 public class RestaurantService {
     private static final String NOTFOUND = "Restaurant not found with id ";
@@ -33,18 +37,20 @@ public class RestaurantService {
                 .orElseThrow(() -> new NotFoundException(NOTFOUND + id));
         return mapper.getLazyDTO(restaurant);
     }
-
+    @Cacheable("restaurants")
     public RestaurantTO getWithMenu(int id) {
         log.info("Getting a restaurant with id {} with menu", id);
         return mapper.getEagerDTO(restaurantRepository.findWithMenu(id, LocalDate.now())
                 .orElseThrow(() -> new NotFoundException(NOTFOUND + id)));
     }
 
+    @Cacheable("restaurants")
     public List<RestaurantTO> getAll() {
         log.info("Getting all");
         return mapper.getLazyDTO(restaurantRepository.findAll(Sort.by(Sort.Direction.ASC, "name")));
     }
 
+    @Cacheable("restaurants")
     public List<RestaurantTO> getAllWithMenus() {
         log.info("Getting all with menu");
         return mapper.getEagerDTO(restaurantRepository.getAllWithMenus(LocalDate.now()));
@@ -52,6 +58,7 @@ public class RestaurantService {
 
     @Transactional
     @Modifying
+    @CacheEvict(allEntries = true)
     public RestaurantTO save(RestaurantTO restaurantTO) {
         log.info("Saving restaurant with id {}", restaurantTO.getId());
         Assert.notNull(restaurantTO, "Restaurant must not be null");
@@ -60,6 +67,7 @@ public class RestaurantService {
 
     @Transactional
     @Modifying
+    @CacheEvict(allEntries = true)
     public void update(RestaurantTO restaurantTO, int id) {
         log.info("Updating restaurant with id {}", restaurantTO.getId());
         Assert.notNull(restaurantTO, "Restaurant must not be null");
@@ -69,6 +77,7 @@ public class RestaurantService {
 
     @Transactional
     @Modifying
+    @CacheEvict(allEntries = true)
     public void delete(int id) {
         log.info("Deleting restaurant with id {}", id);
         restaurantRepository.deleteExisted(id);
