@@ -13,9 +13,9 @@ import java.time.LocalDate;
 public final class MenuItemTO extends NamedTO {
 
     @NotNull
-    private final int price;
+    private int price;
 
-    private final LocalDate date;
-
-    private final int restaurantId;
+    private LocalDate date = LocalDate.now();
+    @NotNull
+    private int restaurantId;
 }

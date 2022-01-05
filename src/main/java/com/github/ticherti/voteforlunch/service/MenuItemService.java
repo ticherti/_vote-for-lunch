@@ -64,14 +64,13 @@ public class MenuItemService {
         MenuItem item = mapper.getEntity(itemTO);
         checkNotLate(item);
         item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
-        item.setDate(LocalDate.now());
         menuItemRepository.save(item);
     }
 
     @Transactional
     @Modifying
     public void delete(int restaurantId, int id) {
-        MenuItem item = findByRestaurant(id, restaurantId);
+        MenuItem item = findByRestaurant(restaurantId, id);
         checkNotLate(item);
         menuItemRepository.deleteExisted(id);
     }

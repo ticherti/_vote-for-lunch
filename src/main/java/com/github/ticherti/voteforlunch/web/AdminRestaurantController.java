@@ -27,6 +27,7 @@ public class AdminRestaurantController {
 
     @GetMapping("/{id}")
     public RestaurantTO get(@PathVariable int id) {
+        log.info("Get restaurant with id {}", id);
         return restaurantService.get(id);
     }
 
@@ -55,7 +56,7 @@ public class AdminRestaurantController {
         restaurantService.update(restaurant, id);
     }
 
-    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         log.info("Deleting a restaurant with id {}", id);

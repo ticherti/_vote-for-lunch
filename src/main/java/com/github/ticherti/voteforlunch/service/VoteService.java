@@ -41,9 +41,9 @@ public class VoteService {
         return mapper.getDTO(voteRepository.getAllByDate(date));
     }
 
-    public List<VoteTO> getAllByRestaurantAndDate(int retaurantId, LocalDate date) {
-        log.info("Service get all by restaurant id {}, date {}", retaurantId, date);
-        return mapper.getDTO(voteRepository.getAllByDateAndRestaurantId(retaurantId, date));
+    public List<VoteTO> getAllByRestaurantAndDate(int restaurantId, LocalDate date) {
+        log.info("Service get all by restaurant id {}, date {}", restaurantId, date);
+        return mapper.getDTO(voteRepository.getAllByDateAndRestaurantId(restaurantId, date));
     }
 
     @Transactional

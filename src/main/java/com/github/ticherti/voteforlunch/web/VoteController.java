@@ -40,13 +40,13 @@ public class VoteController {
         log.info("Getting all votes");
         return voteService.getAllByDate(getDate(date));
     }
-
+//todo probably should change that for restaurants/{}/votes
     @GetMapping("/{restaurantId}")
     public List<VoteTO> getAllByRestaurantAndDate(
             @NotNull @PathVariable int restaurantId,
             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("Getting all votes by restaurant id {}", restaurantId);
-        return voteService.getAllByRestaurantAndDate(restaurantId, date);
+        return voteService.getAllByRestaurantAndDate(restaurantId, getDate(date));
     }
 
     @PostMapping
