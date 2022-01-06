@@ -12,6 +12,7 @@ public interface VoteMapper {
     @Mapping(target = "user.id", constant = "0")
     Vote getEntity(VoteTO voteTO);
 
+    @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "restaurant.id", target = "restaurantId")
     VoteTO getDTO(Vote vote);
 

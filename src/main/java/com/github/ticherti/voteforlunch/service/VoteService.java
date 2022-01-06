@@ -1,6 +1,7 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.VoteTO;
+import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
 import com.github.ticherti.voteforlunch.exception.TooLateToVoteException;
 import com.github.ticherti.voteforlunch.mapper.VoteMapper;
 import com.github.ticherti.voteforlunch.model.Vote;
@@ -24,7 +25,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class VoteService {
     //    todo minor insert deadline into properties
-    private static final LocalTime DEADLINE_TIME = LocalTime.of(11, 00);
+    public static LocalTime deadlineTime = LocalTime.of(0, 0);
 
     private final VoteRepository voteRepository;
     private final UserRepository userRepository;
@@ -56,8 +57,9 @@ public class VoteService {
         Vote vote = mapper.getEntity(voteTO);
         Vote existed = voteRepository.getByDateAndUserId(userId, LocalDate.now());
         if (existed != null) {
-            if (currentTime.isAfter(DEADLINE_TIME)) {
-                throw new TooLateToVoteException(currentTime);
+            if (currentTime.isAfter(deadlineTime)) {
+//                throw new TooLateToVoteException(currentTime);
+                throw new IllegalRequestDataException("Too late to vote");
             }
             vote.setId(existed.getId());
         }

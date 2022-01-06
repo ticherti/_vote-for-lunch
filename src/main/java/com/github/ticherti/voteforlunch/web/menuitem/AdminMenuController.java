@@ -1,4 +1,4 @@
-package com.github.ticherti.voteforlunch.web;
+package com.github.ticherti.voteforlunch.web.menuitem;
 
 import com.github.ticherti.voteforlunch.dto.MenuItemTO;
 import com.github.ticherti.voteforlunch.service.MenuItemService;

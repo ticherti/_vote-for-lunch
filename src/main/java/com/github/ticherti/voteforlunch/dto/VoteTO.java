@@ -16,9 +16,14 @@ public class VoteTO extends BaseEntity {
 
     private LocalDate date = LocalDate.now();
 
-    @JsonIgnore
     private int userId;
 
     @NotNull
     private int restaurantId;
+
+    public VoteTO(int id, int userId, @NotNull int restaurantId) {
+        super(id);
+        this.userId = userId;
+        this.restaurantId = restaurantId;
+    }
 }

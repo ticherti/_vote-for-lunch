@@ -1,9 +1,6 @@
 package com.github.ticherti.voteforlunch.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,6 +9,7 @@ import java.time.LocalDate;
 @Setter
 @ToString(callSuper = true)
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "votes_user_date_unique_idx")})
 public class Vote extends BaseEntity {

@@ -1,7 +1,8 @@
-package com.github.ticherti.voteforlunch.web;
+package com.github.ticherti.voteforlunch.web.vote;
 
 import com.github.ticherti.voteforlunch.dto.VoteTO;
 import com.github.ticherti.voteforlunch.service.VoteService;
+import com.github.ticherti.voteforlunch.web.AuthUser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,7 +41,7 @@ public class VoteController {
         log.info("Getting all votes");
         return voteService.getAllByDate(getDate(date));
     }
-//todo probably should change that for restaurants/{}/votes
+//todo Not exactly RESTful
     @GetMapping("/{restaurantId}")
     public List<VoteTO> getAllByRestaurantAndDate(
             @NotNull @PathVariable int restaurantId,
