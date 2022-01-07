@@ -1,6 +1,5 @@
 package com.github.ticherti.voteforlunch.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -12,7 +11,10 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class RestaurantTO extends NamedTO {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<MenuItemTO> menuItems;
 
+    public RestaurantTO(Integer id, String name, List<MenuItemTO> menuItems) {
+        super(id, name);
+        this.menuItems = menuItems;
+    }
 }

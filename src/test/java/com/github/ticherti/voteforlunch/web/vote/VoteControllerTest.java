@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalTime;
 
-import static com.github.ticherti.voteforlunch.web.restaurant.RestaurantTestData.FIRST_CAFE_ID;
+import static com.github.ticherti.voteforlunch.web.restaurant.RestaurantTestData.PARK_CAFE_ID;
 import static com.github.ticherti.voteforlunch.web.user.UserTestData.ADMIN_MAIL;
 import static com.github.ticherti.voteforlunch.web.user.UserTestData.USER_MAIL;
 import static com.github.ticherti.voteforlunch.web.vote.VoteController.REST_URL;
@@ -54,8 +54,8 @@ class VoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getAllByRestaurantAndDate() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/" + FIRST_CAFE_ID)
-                .param("restaurantId", String.valueOf(FIRST_CAFE_ID)))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/" + PARK_CAFE_ID)
+                .param("restaurantId", String.valueOf(PARK_CAFE_ID)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(VOTE_TO_MATCHER.contentJson(Arrays.array(userVote)));

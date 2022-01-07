@@ -5,13 +5,11 @@ import com.github.ticherti.voteforlunch.model.Restaurant;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = MenuItemMapper.class)
 public interface RestaurantMapper {
-
     Restaurant getEntity(RestaurantTO restaurantTO);
 
     @Mappings({@Mapping(target = "menuItems", ignore = true)})

@@ -22,5 +22,4 @@ VALUES (1, 1, '2022-01-02'),
        (2, 2, '2022-01-02');
 
 INSERT INTO VOTES (RESTAURANT_ID, USER_ID)
-VALUES (1,1),
-       (2,2);
+VALUES (1,1);

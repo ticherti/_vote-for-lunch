@@ -24,7 +24,8 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.ch
 @Slf4j
 @RequestMapping(value = AdminMenuController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminMenuController {
-    final static String REST_URL = "api/admin/restaurants/{restaurantId}/menuitems";
+
+    static final String REST_URL = "/api/admin/restaurants/{restaurantId}/menuitems";
 
     private final MenuItemService menuItemService;
 

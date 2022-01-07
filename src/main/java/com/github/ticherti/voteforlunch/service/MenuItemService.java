@@ -1,7 +1,7 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.MenuItemTO;
-import com.github.ticherti.voteforlunch.exception.NotFoundException;
+import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
 import com.github.ticherti.voteforlunch.exception.TooLateToModifyException;
 import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
@@ -25,7 +25,7 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.as
 @Service
 @AllArgsConstructor
 @Slf4j
-@CacheConfig(cacheNames = "restaurants")
+@CacheConfig(cacheNames = "restaurantMenus")
 @Transactional(readOnly = true)
 public class MenuItemService {
     private static final String NOTFOUND = "Menu item not found with id ";
@@ -84,7 +84,7 @@ public class MenuItemService {
     private MenuItem findByRestaurant(int restaurantId, int id) {
         return menuItemRepository
                 .getByRestaurant(id, restaurantId)
-                .orElseThrow(() -> new NotFoundException(NOTFOUND + id));
+                .orElseThrow(() -> new IllegalRequestDataException(NOTFOUND + id));
     }
 
     private void checkNotLate(MenuItem item) {

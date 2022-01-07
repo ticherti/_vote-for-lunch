@@ -1,7 +1,7 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.RestaurantTO;
-import com.github.ticherti.voteforlunch.exception.NotFoundException;
+import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
 import com.github.ticherti.voteforlunch.mapper.RestaurantMapper;
 import com.github.ticherti.voteforlunch.model.Restaurant;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.as
 @Service
 @AllArgsConstructor
 @Slf4j
-@CacheConfig(cacheNames = "restaurants")
+@CacheConfig(cacheNames = {"restaurants", "restaurantMenus"})
 @Transactional(readOnly = true)
 public class RestaurantService {
     private static final String NOTFOUND = "Restaurant not found with id ";
@@ -34,14 +35,14 @@ public class RestaurantService {
     public RestaurantTO get(int id) {
         log.info("Getting a restaurant with id {}", id);
         Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(NOTFOUND + id));
+                .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
         return mapper.getLazyDTO(restaurant);
     }
-    @Cacheable("restaurants")
+
     public RestaurantTO getWithMenu(int id) {
         log.info("Getting a restaurant with id {} with menu", id);
         return mapper.getEagerDTO(restaurantRepository.findWithMenu(id, LocalDate.now())
-                .orElseThrow(() -> new NotFoundException(NOTFOUND + id)));
+                .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id)));
     }
 
     @Cacheable("restaurants")
@@ -50,7 +51,7 @@ public class RestaurantService {
         return mapper.getLazyDTO(restaurantRepository.findAll(Sort.by(Sort.Direction.ASC, "name")));
     }
 
-    @Cacheable("restaurants")
+    @Cacheable("restaurantMenus")
     public List<RestaurantTO> getAllWithMenus() {
         log.info("Getting all with menu");
         return mapper.getEagerDTO(restaurantRepository.getAllWithMenus(LocalDate.now()));
@@ -72,6 +73,8 @@ public class RestaurantService {
         log.info("Updating restaurant with id {}", restaurantTO.getId());
         Assert.notNull(restaurantTO, "Restaurant must not be null");
         assureIdConsistent(restaurantTO, id);
+        restaurantRepository.findById(id).orElseThrow(
+                () -> new IllegalRequestDataException(NOTFOUND + id));
         restaurantRepository.save(mapper.getEntity(restaurantTO));
     }
 
