@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithUserDetails(value = ADMIN_MAIL)
 class AdminRestaurantControllerTest extends AbstractControllerTest {
 
     @Autowired
@@ -28,7 +29,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     public static final String REST_URL = AdminRestaurantController.REST_URL + '/';
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void get() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + PARK_CAFE_ID))
                 .andExpect(status().isOk())
@@ -38,7 +38,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
                 .andDo(print())
@@ -46,7 +45,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
@@ -56,7 +54,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void createWithLocation() throws Exception {
         RestaurantTO newRestaurant = RestaurantTestData.getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -71,7 +68,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void createNotNew() throws Exception {
         RestaurantTO newRestaurant = RestaurantTestData.getNew();
         newRestaurant.setId(NOT_FOUND);
@@ -83,7 +79,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
 
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         RestaurantTO updated = RestaurantTestData.getUpdated();
         updated.setId(null);
@@ -98,7 +93,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void updateNotFound() throws Exception {
         RestaurantTO updated = RestaurantTestData.getUpdated();
         updated.setId(NOT_FOUND);
@@ -111,7 +105,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + PARK_CAFE_ID))
                 .andDo(print())
@@ -119,7 +112,6 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void deleteNotFound() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND))
                 .andExpect(status().isUnprocessableEntity());
