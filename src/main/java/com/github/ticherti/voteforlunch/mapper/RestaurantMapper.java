@@ -5,6 +5,7 @@ import com.github.ticherti.voteforlunch.model.Restaurant;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+
 import java.util.ArrayList;
 import java.util.List;
 

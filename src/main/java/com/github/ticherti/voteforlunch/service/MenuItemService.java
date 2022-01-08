@@ -88,8 +88,9 @@ public class MenuItemService {
     }
 
     private void checkNotLate(MenuItem item) {
-        if (item.getDate().isBefore(LocalDate.now())) {
-            throw new TooLateToModifyException("The item is not fresh enough too touch it");
+        LocalDate itemDate = item.getDate();
+        if (itemDate.isBefore(LocalDate.now())) {
+            throw new TooLateToModifyException(itemDate);
         }
     }
 }

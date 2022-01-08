@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mapstruck.version>1.4.2.Final</mapstruck.version>
-                <mapstruck.lombock.version>0.2.0</mapstruck.lombock.version>
+        <mapstruck.lombock.version>0.2.0</mapstruck.lombock.version>
     </properties>
 
     <dependencies>
@@ -43,7 +43,7 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!--        jackson-->
+        <!--jackson-->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate5</artifactId>
@@ -70,13 +70,12 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
-
+        <!--h2-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-
-
+        <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

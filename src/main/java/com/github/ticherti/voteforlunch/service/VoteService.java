@@ -1,8 +1,7 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.VoteTO;
-import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
-import com.github.ticherti.voteforlunch.exception.TooLateToVoteException;
+import com.github.ticherti.voteforlunch.exception.TooLateToModifyException;
 import com.github.ticherti.voteforlunch.mapper.VoteMapper;
 import com.github.ticherti.voteforlunch.model.Vote;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
@@ -58,8 +57,7 @@ public class VoteService {
         Vote existed = voteRepository.getByDateAndUserId(userId, LocalDate.now());
         if (existed != null) {
             if (currentTime.isAfter(deadlineTime)) {
-//                throw new TooLateToVoteException(currentTime);
-                throw new IllegalRequestDataException("Too late to vote");
+                throw new TooLateToModifyException(currentTime);
             }
             vote.setId(existed.getId());
         }

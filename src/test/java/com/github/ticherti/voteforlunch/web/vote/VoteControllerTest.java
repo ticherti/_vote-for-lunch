@@ -83,7 +83,7 @@ class VoteControllerTest extends AbstractControllerTest {
         updated.setId(null);
         VoteService.deadlineTime = LocalTime.now().plusSeconds(1);
 
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+        perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())

@@ -1,7 +1,6 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.UserTO;
-import com.github.ticherti.voteforlunch.exception.NotFoundException;
 import com.github.ticherti.voteforlunch.mapper.UserMapper;
 import com.github.ticherti.voteforlunch.model.User;
 import com.github.ticherti.voteforlunch.repository.UserRepository;

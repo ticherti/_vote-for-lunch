@@ -1,6 +1,5 @@
 package com.github.ticherti.voteforlunch.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.ticherti.voteforlunch.model.BaseEntity;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

@@ -49,7 +49,8 @@ public class VoteController {
         log.info("Getting all votes by restaurant id {}", restaurantId);
         return voteService.getAllByRestaurantAndDate(restaurantId, getDate(date));
     }
-    //todo Not exactly RESTful
+
+    //Unrestful a bit
     @PostMapping
     public ResponseEntity<VoteTO> createWithLocation(@Valid @RequestBody VoteTO voteTO, @AuthenticationPrincipal AuthUser authUser) {
         log.info("Creating with location");

@@ -16,11 +16,11 @@ public class Vote extends BaseEntity {
     @Column(name = "date", columnDefinition = "date default current_date")
     private LocalDate date = LocalDate.now();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 }
