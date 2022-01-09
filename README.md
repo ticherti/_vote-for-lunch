@@ -1,4 +1,4 @@
-[Project Vote For Restaurant](Add here git link)
+[Project Vote For Restaurant](https://github.com/ticherti/_vote-for-lunch)
 ===============================
 
 #### voting system for deciding where to have lunch
