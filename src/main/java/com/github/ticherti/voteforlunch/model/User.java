@@ -1,6 +1,5 @@
 package com.github.ticherti.voteforlunch.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.ticherti.voteforlunch.HasIdAndEmail;
 import com.github.ticherti.voteforlunch.util.validation.NoHtml;
@@ -19,14 +18,17 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = {"password", "votes"})
+@ToString(callSuper = true)
 public class User extends NamedEntity implements HasIdAndEmail, Serializable {
 
     @Serial
@@ -43,6 +45,7 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
     @NotBlank
     @Size(min = 5, max = 100)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ToString.Exclude
     private String password;
 
     @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
@@ -62,11 +65,6 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
     @JoinColumn(name = "user_id") //https://stackoverflow.com/a/62848296/548473
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Vote> votes;
 
     public User(User u) {
         this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);

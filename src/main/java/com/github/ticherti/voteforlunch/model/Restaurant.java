@@ -1,6 +1,5 @@
 package com.github.ticherti.voteforlunch.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,17 +15,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-@Table(name = "restaurants", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "restaurant", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 public class Restaurant extends NamedEntity {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     List<MenuItem> menuItems;
-
-    @JsonIgnore
-    @ToString.Exclude
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Vote> votes;
 }

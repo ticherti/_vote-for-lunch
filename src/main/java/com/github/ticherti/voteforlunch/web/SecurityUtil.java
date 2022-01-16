@@ -1,6 +1,5 @@
 package com.github.ticherti.voteforlunch.web;
 
-import com.github.ticherti.voteforlunch.model.User;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,10 +20,6 @@ public class SecurityUtil {
 
     public static AuthUser get() {
         return requireNonNull(safeGet(), "No authorized user found");
-    }
-
-    public static User authUser() {
-        return get().getUser();
     }
 
     public static int authId() {

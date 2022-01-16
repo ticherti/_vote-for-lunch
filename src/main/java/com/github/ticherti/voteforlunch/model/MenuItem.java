@@ -13,19 +13,18 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-@Slf4j
 @Entity
-@Table(name = "menuitems", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"},
-        name = "menuitems_unique_restaurant_datetime_name_idx")})
+@Table(name = "menu_item", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "posted", "name"},
+        name = "menu_item_unique_restaurant_postdate_name_idx")})
 public class MenuItem extends NamedEntity {
 
     @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "date", columnDefinition = "date default current_date")
+    @Column(name = "posted", columnDefinition = "date default current_date", nullable = false)
     private LocalDate date = LocalDate.now();
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @ToString.Exclude
     private Restaurant restaurant;
