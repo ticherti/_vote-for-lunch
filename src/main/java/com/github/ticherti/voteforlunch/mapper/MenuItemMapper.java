@@ -13,7 +13,6 @@ public interface MenuItemMapper {
 
     MenuItem getEntity(MenuItemTO menuItemTO);
 
-    @Mappings({@Mapping(target = "restaurantId", source = "restaurant.id"),})
     MenuItemTO getDTO(MenuItem menuItem);
 
     List<MenuItemTO> getDTO(List<MenuItem> menuItems);

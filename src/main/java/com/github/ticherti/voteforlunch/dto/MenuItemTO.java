@@ -17,14 +17,11 @@ public final class MenuItemTO extends NamedTO {
     @NotNull
     private int price;
 
-    private LocalDate date = LocalDate.now();
-
     @NotNull
-    private int restaurantId;
+    private LocalDate date;
 
     public MenuItemTO(Integer id, String name, int price, int restaurantId) {
         super(id, name);
         this.price = price;
-        this.restaurantId = restaurantId;
     }
 }

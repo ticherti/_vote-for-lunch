@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +29,14 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.as
 @Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
 
+    private static final String NOTFOUND = "User not found with id ";
+
     private final UserRepository userRepository;
     private final UserMapper mapper;
 
-    public Optional<User> get(int id) {
+    public User get(int id) {
         log.info("Geting a user by id {}", id);
-        return userRepository.findById(id);
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
     }
 
     public Optional<User> getByEmail(String email) {

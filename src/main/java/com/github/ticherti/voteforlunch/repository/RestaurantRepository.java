@@ -12,13 +12,13 @@ import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface RestaurantRepository extends BaseRepository<Restaurant> {
-    //todo check queries. Add  type = EntityGraph.EntityGraphType.LOAD
+
     @EntityGraph(attributePaths = {"menuItems"})
-    @Query("SELECT r FROM Restaurant r JOIN FETCH r.menuItems m WHERE r.id=:id AND m.date=:date")
+    @Query("SELECT r FROM Restaurant r JOIN FETCH r.menuItems m WHERE r.id=:id AND m.date=:date ORDER BY m.name")
     Optional<Restaurant> findWithMenu(int id, LocalDate date);
 
     @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT r FROM Restaurant r JOIN FETCH r.menuItems m WHERE m.date=:date ORDER BY r.name")
+    @Query("SELECT r FROM Restaurant r JOIN FETCH r.menuItems m WHERE m.date=:date ORDER BY r.name, m.name")
     List<Restaurant> getAllWithMenus(LocalDate date);
 
     default Restaurant checkPresentRestaurant(int restaurantId) {

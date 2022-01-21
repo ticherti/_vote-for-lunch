@@ -1,7 +1,6 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.MenuItemTO;
-import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
 import com.github.ticherti.voteforlunch.exception.TooLateToModifyException;
 import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -53,21 +53,19 @@ public class MenuItemService {
 
         MenuItem item = mapper.getEntity(itemTO);
         item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
-        item.setDate(LocalDate.now());
         return mapper.getDTO(menuItemRepository.save(item));
     }
 
     @Transactional
     @Modifying
     @CacheEvict(allEntries = true)
-    public void update(int restaurantId, MenuItemTO itemTO, int id) {
+    public void update(MenuItemTO itemTO, int restaurantId, int id) {
         log.info("Updating menuitem with id {}", id);
         Assert.notNull(itemTO, "Item must not be null");
         assureIdConsistent(itemTO, id);
         findByRestaurant(restaurantId, id);
 
         MenuItem item = mapper.getEntity(itemTO);
-        checkNotLate(item);
         item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
         menuItemRepository.save(item);
     }
@@ -75,22 +73,13 @@ public class MenuItemService {
     @Transactional
     @Modifying
     @CacheEvict(allEntries = true)
-    public void delete(int restaurantId, int id) {
-        MenuItem item = findByRestaurant(restaurantId, id);
-        checkNotLate(item);
+    public void delete(int id) {
         menuItemRepository.deleteExisted(id);
     }
 
     private MenuItem findByRestaurant(int restaurantId, int id) {
         return menuItemRepository
                 .getByRestaurant(id, restaurantId)
-                .orElseThrow(() -> new IllegalRequestDataException(NOTFOUND + id));
-    }
-
-    private void checkNotLate(MenuItem item) {
-        LocalDate itemDate = item.getDate();
-        if (itemDate.isBefore(LocalDate.now())) {
-            throw new TooLateToModifyException(itemDate);
-        }
+                .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
     }
 }

@@ -25,7 +25,7 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.ch
 @RequestMapping(value = AdminMenuController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminMenuController {
 
-    static final String REST_URL = "/api/admin/restaurants/{restaurantId}/menuitems";
+    static final String REST_URL = "/api/admin/restaurants/{restaurantId}/menu-items";
 
     private final MenuItemService menuItemService;
 
@@ -35,7 +35,7 @@ public class AdminMenuController {
         return menuItemService.get(restaurantId, id);
     }
 
-    @GetMapping
+    @GetMapping("/by-date")
     public List<MenuItemTO> getAllByDate(@PathVariable int restaurantId,
                                          @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("Getting the today menu for the restaurant {}", restaurantId);
@@ -56,16 +56,16 @@ public class AdminMenuController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable int restaurantId, @Valid @RequestBody MenuItemTO item, @PathVariable int id) {
+    public void update(@Valid @RequestBody MenuItemTO item, @PathVariable int restaurantId, @PathVariable int id) {
         log.info("Updating menuitem with id {}", id);
-        menuItemService.update(restaurantId, item, id);
+        menuItemService.update(item, restaurantId, id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int restaurantId, @PathVariable int id) {
+    public void delete(@PathVariable int id) {
         log.info("Deleting menuitem with id {}", id);
-        menuItemService.delete(restaurantId, id);
+        menuItemService.delete(id);
     }
 }
 

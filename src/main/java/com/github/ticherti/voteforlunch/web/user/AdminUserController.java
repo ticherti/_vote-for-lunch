@@ -25,9 +25,9 @@ public class AdminUserController extends AbstractUserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> get(@PathVariable int id) {
+    public User get(@PathVariable int id) {
         log.info("Getting a user with id {}", id);
-        return ResponseEntity.of(userService.get(id));
+        return userService.get(id);
     }
 
     @DeleteMapping("/{id}")
