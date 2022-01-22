@@ -20,10 +20,4 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
     @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("SELECT r FROM Restaurant r JOIN FETCH r.menuItems m WHERE m.date=:date ORDER BY r.name, m.name")
     List<Restaurant> getAllWithMenus(LocalDate date);
-
-    default Restaurant checkPresentRestaurant(int restaurantId) {
-        return findById(restaurantId)
-                .orElseThrow(() ->
-                        new IllegalRequestDataException("The restaurant for this menu item is not found with id " + restaurantId));
-    }
 }

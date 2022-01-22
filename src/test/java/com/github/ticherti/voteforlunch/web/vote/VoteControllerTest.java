@@ -3,8 +3,8 @@ package com.github.ticherti.voteforlunch.web.vote;
 import com.github.ticherti.voteforlunch.dto.VoteTO;
 import com.github.ticherti.voteforlunch.mapper.VoteMapper;
 import com.github.ticherti.voteforlunch.repository.VoteRepository;
-import com.github.ticherti.voteforlunch.service.VoteService;
 import com.github.ticherti.voteforlunch.util.JsonUtil;
+import com.github.ticherti.voteforlunch.util.TimeUtil;
 import com.github.ticherti.voteforlunch.web.AbstractControllerTest;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
@@ -31,6 +31,8 @@ class VoteControllerTest extends AbstractControllerTest {
     private VoteRepository voteRepository;
     @Autowired
     private VoteMapper mapper;
+    @Autowired
+    private TimeUtil timeUtil;
 
     @Test
     @WithUserDetails(value = USER_MAIL)
@@ -81,7 +83,7 @@ class VoteControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         VoteTO updated = VoteTestData.getUpdated();
         updated.setId(null);
-        VoteService.deadlineTime = LocalTime.now().plusSeconds(1);
+        timeUtil.setTimeLimit(LocalTime.now().plusSeconds(1));
 
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +98,8 @@ class VoteControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = USER_MAIL)
     void updateAfter() throws Exception {
         VoteTO updated = VoteTestData.getUpdated();
-        VoteService.deadlineTime = LocalTime.now().minusSeconds(1);
+        timeUtil.setTimeLimit(LocalTime.now().minusSeconds(1));
+
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))

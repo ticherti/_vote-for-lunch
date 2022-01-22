@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface MenuItemRepository extends BaseRepository<MenuItem> {
 
     @Query("SELECT i FROM MenuItem i WHERE i.id=:id AND i.restaurant.id=:restaurantId")
-    Optional<MenuItem> getByRestaurant(int id, int restaurantId);
+    Optional<MenuItem> findByRestaurant(int id, int restaurantId);
 
     @Query("SELECT i FROM MenuItem i WHERE i.restaurant.id=:restaurantId AND i.date=:date ORDER BY i.name")
     List<MenuItem> getAllByRestaurantAndDate(int restaurantId, LocalDate date);

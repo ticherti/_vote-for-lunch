@@ -1,7 +1,6 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.MenuItemTO;
-import com.github.ticherti.voteforlunch.exception.TooLateToModifyException;
 import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
 import com.github.ticherti.voteforlunch.repository.MenuItemRepository;
@@ -34,7 +33,7 @@ public class MenuItemService {
     private final MenuItemMapper mapper;
 
     public MenuItemTO get(int restaurantId, int id) {
-        log.info("Getting an item for the restaurant {} with id", restaurantId, id);
+        log.info("Getting an item for the restaurant {} with id {}", restaurantId, id);
         return mapper.getDTO(findByRestaurant(restaurantId, id));
     }
 
@@ -52,7 +51,7 @@ public class MenuItemService {
         Assert.notNull(itemTO, "Item must not be null");
 
         MenuItem item = mapper.getEntity(itemTO);
-        item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
+        item.setRestaurant(restaurantRepository.getById(restaurantId));
         return mapper.getDTO(menuItemRepository.save(item));
     }
 
@@ -66,7 +65,7 @@ public class MenuItemService {
         findByRestaurant(restaurantId, id);
 
         MenuItem item = mapper.getEntity(itemTO);
-        item.setRestaurant(restaurantRepository.checkPresentRestaurant(restaurantId));
+        item.setRestaurant(restaurantRepository.getById(restaurantId));
         menuItemRepository.save(item);
     }
 
@@ -79,7 +78,7 @@ public class MenuItemService {
 
     private MenuItem findByRestaurant(int restaurantId, int id) {
         return menuItemRepository
-                .getByRestaurant(id, restaurantId)
+                .findByRestaurant(id, restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
     }
 }

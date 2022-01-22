@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Value
@@ -13,15 +12,15 @@ import java.time.LocalDate;
 @ToString(callSuper = true)
 public class VoteTO extends BaseEntity {
 
-    private LocalDate date = LocalDate.now();
+    private LocalDate date;
 
     private int userId;
 
-    @NotNull
     private int restaurantId;
 
-    public VoteTO(int id, int userId, @NotNull int restaurantId) {
+    public VoteTO(Integer id, LocalDate date, int userId, int restaurantId) {
         super(id);
+        this.date = date;
         this.userId = userId;
         this.restaurantId = restaurantId;
     }
