@@ -21,8 +21,6 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -70,10 +68,10 @@ public class RestaurantService {
     @Transactional
     @Modifying
     @CacheEvict(allEntries = true)
-    public void update(RestaurantTO restaurantTO, int id) {
+    public void update(RestaurantTO restaurantTO) {
+        int id = restaurantTO.getId();
         log.info("Updating restaurant with id {}", restaurantTO.getId());
         Assert.notNull(restaurantTO, "Restaurant must not be null");
-        assureIdConsistent(restaurantTO, id);
         restaurantRepository.findById(id).orElseThrow(
                 () -> new IllegalRequestDataException(NOTFOUND + id));
         restaurantRepository.save(mapper.getEntity(restaurantTO));

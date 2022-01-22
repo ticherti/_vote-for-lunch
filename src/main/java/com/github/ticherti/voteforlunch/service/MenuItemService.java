@@ -19,8 +19,6 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -58,10 +56,10 @@ public class MenuItemService {
     @Transactional
     @Modifying
     @CacheEvict(allEntries = true)
-    public void update(MenuItemTO itemTO, int restaurantId, int id) {
+    public void update(MenuItemTO itemTO, int restaurantId) {
+        int id = itemTO.getId();
         log.info("Updating menuitem with id {}", id);
         Assert.notNull(itemTO, "Item must not be null");
-        assureIdConsistent(itemTO, id);
         findByRestaurant(restaurantId, id);
 
         MenuItem item = mapper.getEntity(itemTO);

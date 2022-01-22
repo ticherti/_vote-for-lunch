@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @RestController
@@ -58,6 +59,7 @@ public class AdminUserController extends AbstractUserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody User user, @PathVariable int id) {
         log.info("update {} with id={}", user, id);
+        assureIdConsistent(user, id);
         userService.update(user, id);
     }
 

@@ -17,6 +17,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
 
 @RestController
@@ -58,7 +59,8 @@ public class AdminMenuController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody MenuItemTO item, @PathVariable int restaurantId, @PathVariable int id) {
         log.info("Updating menuitem with id {}", id);
-        menuItemService.update(item, restaurantId, id);
+        assureIdConsistent(item, id);
+        menuItemService.update(item, restaurantId);
     }
 
     @DeleteMapping("/{id}")

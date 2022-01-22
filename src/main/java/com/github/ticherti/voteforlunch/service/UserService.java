@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.github.ticherti.voteforlunch.config.WebSecurityConfig.PASSWORD_ENCODER;
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
 
 @Service
 @AllArgsConstructor
@@ -86,7 +85,6 @@ public class UserService implements UserDetailsService {
     public void update(User user, int id) {
         log.info("Updating a user with id {}", id);
         Assert.notNull(user, "User must not be null");
-        assureIdConsistent(user, id);
         userRepository.save(prepareToSave(user));
     }
 
