@@ -32,7 +32,7 @@ public class VoteService {
 
     public VoteTO get(int id, LocalDate date) {
         log.info("Service get vote id {}, date {}", id, date);
-        date = (date == null) ? LocalDate.now() : date;
+
         return mapper.getDTO(voteRepository.getByDateAndUserId(id, date)
                 .orElseThrow(() -> new EntityNotFoundException("No vote's found")));
     }

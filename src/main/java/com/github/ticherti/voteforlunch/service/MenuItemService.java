@@ -37,7 +37,6 @@ public class MenuItemService {
 
     public List<MenuItemTO> getAll(int restaurantId, @Nullable LocalDate date) {
         log.info("Getting all items");
-        date = (date == null) ? LocalDate.now() : date;
         return mapper.getDTO(menuItemRepository.getAllByRestaurantAndDate(restaurantId, date));
     }
 

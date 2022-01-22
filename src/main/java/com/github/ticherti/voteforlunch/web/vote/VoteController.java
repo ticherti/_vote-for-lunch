@@ -32,6 +32,7 @@ public class VoteController {
     public VoteTO getByUserAndDate(@AuthenticationPrincipal AuthUser authUser,
                                    @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("Getting a user's vote");
+        date = (date == null) ? LocalDate.now() : date;
         return voteService.get(authUser.id(), getDate(date));
     }
 

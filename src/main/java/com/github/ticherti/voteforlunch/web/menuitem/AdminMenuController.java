@@ -40,6 +40,7 @@ public class AdminMenuController {
     public List<MenuItemTO> getAllByDate(@PathVariable int restaurantId,
                                          @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("Getting the menu for the restaurant {}", restaurantId);
+        date = (date == null) ? LocalDate.now() : date;
         return menuItemService.getAll(restaurantId, date);
     }
 
