@@ -33,7 +33,7 @@ public class AdminUserController extends AbstractUserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
-        log.info("Deleting a user with id {}");
+        log.info("Deleting a user with id {}", id);
         userService.delete(id);
     }
 

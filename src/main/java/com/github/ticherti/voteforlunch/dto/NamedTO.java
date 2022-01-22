@@ -1,15 +1,16 @@
 package com.github.ticherti.voteforlunch.dto;
 
 import com.github.ticherti.voteforlunch.util.validation.NoHtml;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@RequiredArgsConstructor
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class NamedTO extends BaseTO {
     @NotBlank

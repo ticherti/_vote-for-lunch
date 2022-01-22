@@ -1,6 +1,7 @@
 package com.github.ticherti.voteforlunch.dto;
 
 import com.github.ticherti.voteforlunch.model.BaseEntity;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -12,11 +13,11 @@ import java.time.LocalDate;
 @ToString(callSuper = true)
 public class VoteTO extends BaseEntity {
 
-    private LocalDate date;
+    LocalDate date;
 
-    private int userId;
+    int userId;
 
-    private int restaurantId;
+    int restaurantId;
 
     public VoteTO(Integer id, LocalDate date, int userId, int restaurantId) {
         super(id);

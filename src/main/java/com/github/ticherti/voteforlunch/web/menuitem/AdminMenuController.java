@@ -31,14 +31,14 @@ public class AdminMenuController {
 
     @GetMapping("/{id}")
     public MenuItemTO get(@PathVariable int restaurantId, @PathVariable int id) {
-        log.info("Getting an item for the restaurant {} with id", restaurantId, id);
+        log.info("Getting an item for the restaurant {} with id {}", restaurantId, id);
         return menuItemService.get(restaurantId, id);
     }
 
     @GetMapping("/by-date")
     public List<MenuItemTO> getAllByDate(@PathVariable int restaurantId,
                                          @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        log.info("Getting the today menu for the restaurant {}", restaurantId);
+        log.info("Getting the menu for the restaurant {}", restaurantId);
         return menuItemService.getAll(restaurantId, date);
     }
 
