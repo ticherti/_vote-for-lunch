@@ -2,8 +2,6 @@ package com.github.ticherti.voteforlunch.dto;
 
 import lombok.*;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Data
 @Setter
@@ -11,10 +9,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class RestaurantTO extends NamedTO {
 
-    private List<MenuItemTO> menuItems;
-
-    public RestaurantTO(Integer id, String name, List<MenuItemTO> menuItems) {
+    public RestaurantTO(Integer id, String name) {
         super(id, name);
-        this.menuItems = menuItems;
     }
 }

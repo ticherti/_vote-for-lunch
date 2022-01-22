@@ -34,7 +34,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(park_cafe));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(parkCafe));
     }
 
     @Test
@@ -50,7 +50,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(park_cafe, joe_cafe));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(parkCafe, joeCafe));
     }
 
     @Test
@@ -64,7 +64,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
         int newId = created.id();
         newRestaurant.setId(newId);
         RESTAURANT_TO_MATCHER.assertMatch(created, newRestaurant);
-        RESTAURANT_TO_MATCHER.assertMatch(mapper.getLazyDTO(repository.getById(newId)), newRestaurant);
+        RESTAURANT_TO_MATCHER.assertMatch(mapper.getDTO(repository.getById(newId)), newRestaurant);
     }
 
     @Test
@@ -89,7 +89,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        RESTAURANT_TO_MATCHER.assertMatch(mapper.getLazyDTO(repository.getById(PARK_CAFE_ID)), RestaurantTestData.getUpdated());
+        RESTAURANT_TO_MATCHER.assertMatch(mapper.getDTO(repository.getById(PARK_CAFE_ID)), RestaurantTestData.getUpdated());
     }
 
     @Test

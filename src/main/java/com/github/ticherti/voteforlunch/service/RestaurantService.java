@@ -1,6 +1,7 @@
 package com.github.ticherti.voteforlunch.service;
 
 import com.github.ticherti.voteforlunch.dto.RestaurantTO;
+import com.github.ticherti.voteforlunch.dto.RestaurantWithMenuTO;
 import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
 import com.github.ticherti.voteforlunch.mapper.RestaurantMapper;
 import com.github.ticherti.voteforlunch.model.Restaurant;
@@ -36,25 +37,25 @@ public class RestaurantService {
         log.info("Getting a restaurant with id {}", id);
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
-        return mapper.getLazyDTO(restaurant);
+        return mapper.getDTO(restaurant);
     }
 
-    public RestaurantTO getWithMenu(int id) {
+    public RestaurantWithMenuTO getWithMenu(int id) {
         log.info("Getting a restaurant with id {} with menu", id);
-        return mapper.getEagerDTO(restaurantRepository.findWithMenu(id, LocalDate.now())
+        return mapper.getWithMenuDTO(restaurantRepository.findWithMenu(id, LocalDate.now())
                 .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id)));
     }
 
     @Cacheable("restaurants")
     public List<RestaurantTO> getAll() {
         log.info("Getting all");
-        return mapper.getLazyDTO(restaurantRepository.findAll(Sort.by(Sort.Direction.ASC, "name")));
+        return mapper.getDTO(restaurantRepository.findAll(Sort.by(Sort.Direction.ASC, "name")));
     }
 
     @Cacheable("restaurantMenus")
-    public List<RestaurantTO> getAllWithMenus() {
+    public List<RestaurantWithMenuTO> getAllWithMenus() {
         log.info("Getting all with menu");
-        return mapper.getEagerDTO(restaurantRepository.getAllWithMenus(LocalDate.now()));
+        return mapper.getWithMenuDTO(restaurantRepository.getAllWithMenus(LocalDate.now()));
     }
 
     @Transactional
@@ -63,7 +64,7 @@ public class RestaurantService {
     public RestaurantTO save(RestaurantTO restaurantTO) {
         log.info("Saving restaurant with id {}", restaurantTO.getId());
         Assert.notNull(restaurantTO, "Restaurant must not be null");
-        return mapper.getLazyDTO(restaurantRepository.save(mapper.getEntity(restaurantTO)));
+        return mapper.getDTO(restaurantRepository.save(mapper.getEntity(restaurantTO)));
     }
 
     @Transactional

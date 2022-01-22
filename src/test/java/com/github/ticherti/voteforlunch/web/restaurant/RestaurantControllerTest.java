@@ -25,7 +25,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(park_cafe));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(parkCafe));
     }
 
     @Test
@@ -37,12 +37,12 @@ class RestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMenu() throws Exception {
-        park_cafe.setMenuItems(List.of(parkBeet, parkBurger));
+        parkCafeWithMenu.setMenuItems(List.of(parkBeet, parkBurger));
         perform(MockMvcRequestBuilders.get(REST_URL + PARK_CAFE_MENU_URL))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(park_cafe));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(parkCafeWithMenu));
     }
 
     @Test
@@ -58,17 +58,17 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(park_cafe, joe_cafe));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(parkCafe, joeCafe));
     }
 
     @Test
     void getWithMenus() throws Exception {
-        park_cafe.setMenuItems(List.of(parkBurger, parkBeet));
-        joe_cafe.setMenuItems(List.of(joeBurger, joeCola));
+        parkCafeWithMenu.setMenuItems(List.of(parkBurger, parkBeet));
+        joeCafeWithMenu.setMenuItems(List.of(joeBurger, joeCola));
         perform(MockMvcRequestBuilders.get(REST_URL + "/menus"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_TO_MATCHER.contentJson(park_cafe, joe_cafe));
+                .andExpect(RESTAURANT_TO_MATCHER.contentJson(parkCafeWithMenu, joeCafeWithMenu));
     }
 }

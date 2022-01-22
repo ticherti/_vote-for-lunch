@@ -1,6 +1,7 @@
 package com.github.ticherti.voteforlunch.web.restaurant;
 
 import com.github.ticherti.voteforlunch.dto.RestaurantTO;
+import com.github.ticherti.voteforlunch.dto.RestaurantWithMenuTO;
 import com.github.ticherti.voteforlunch.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,8 @@ public class RestaurantController {
         return restaurantService.get(id);
     }
 
-    @GetMapping("/{id}/menus")
-    public RestaurantTO getWithMenu(@PathVariable int id) {
+    @GetMapping("/{id}/with-menu")
+    public RestaurantWithMenuTO getWithMenu(@PathVariable int id) {
         log.info("Getting a restaurant with id {} with menu", id);
         return restaurantService.getWithMenu(id);
     }
@@ -39,8 +40,8 @@ public class RestaurantController {
         return restaurantService.getAll();
     }
 
-    @GetMapping("/menus")
-    public List<RestaurantTO> getAllWithMenus() {
+    @GetMapping("/with-menu")
+    public List<RestaurantWithMenuTO> getAllWithMenus() {
         log.info("Getting restaurants with menus");
         return restaurantService.getAllWithMenus();
     }
