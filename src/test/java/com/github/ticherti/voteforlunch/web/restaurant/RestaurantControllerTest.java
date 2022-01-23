@@ -32,7 +32,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -49,7 +49,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
     void geNotFoundtWithMenu() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND_MENU_URL))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -65,7 +65,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
     void getWithMenus() throws Exception {
         parkCafeWithMenu.setMenuItems(List.of(parkBurger, parkBeet));
         joeCafeWithMenu.setMenuItems(List.of(joeBurger, joeCola));
-        perform(MockMvcRequestBuilders.get(REST_URL + "/menus"))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/with-menu"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

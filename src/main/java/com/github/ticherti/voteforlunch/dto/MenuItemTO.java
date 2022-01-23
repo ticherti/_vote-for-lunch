@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 @Data
 @Setter
-@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public final class MenuItemTO extends NamedTO {
@@ -20,8 +19,9 @@ public final class MenuItemTO extends NamedTO {
     @NotNull
     private LocalDate date;
 
-    public MenuItemTO(Integer id, String name, int price, int restaurantId) {
+    public MenuItemTO(Integer id, String name, int price, LocalDate date) {
         super(id, name);
         this.price = price;
+        this.date = date;
     }
 }
