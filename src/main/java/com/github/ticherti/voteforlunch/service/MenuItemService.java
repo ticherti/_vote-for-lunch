@@ -15,17 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.getFound;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 @CacheConfig(cacheNames = "restaurantMenus")
-@Transactional(readOnly = true)
 public class MenuItemService {
-    private static final String NOTFOUND = "Menu item not found with id ";
     private final MenuItemRepository menuItemRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemMapper mapper;
@@ -66,16 +65,12 @@ public class MenuItemService {
         menuItemRepository.save(item);
     }
 
-    @Transactional
-    @Modifying
     @CacheEvict(allEntries = true)
     public void delete(int id) {
         menuItemRepository.deleteExisted(id);
     }
 
     private MenuItem findByRestaurant(int restaurantId, int id) {
-        return menuItemRepository
-                .findByRestaurant(id, restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
+        return getFound(menuItemRepository.findByRestaurant(id, restaurantId));
     }
 }

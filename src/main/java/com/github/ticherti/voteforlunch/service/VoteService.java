@@ -13,16 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.getFound;
+
 @Service
 @AllArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class VoteService {
 
     private final TimeUtil timeUtil;
@@ -32,14 +33,13 @@ public class VoteService {
 
     public VoteTO get(int id, LocalDate date) {
         log.info("Service get vote id {}, date {}", id, date);
-
-        return mapper.getDTO(voteRepository.getByDateAndUserId(id, date)
-                .orElseThrow(() -> new EntityNotFoundException("No vote's found")));
+        return mapper.getDTO(getFound(voteRepository.getByDateAndUserId(id, date)));
     }
 
     @Transactional
     @Modifying
     public VoteTO save(int restaurantId, User user) {
+        Assert.notNull(user, "User must not be null");
         log.info("Service save vote");
         final LocalTime currentTime = LocalTime.now();
 

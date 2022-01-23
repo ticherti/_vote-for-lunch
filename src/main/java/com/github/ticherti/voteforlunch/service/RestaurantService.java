@@ -17,31 +17,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.getFound;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 @CacheConfig(cacheNames = {"restaurants", "restaurantMenus"})
-@Transactional(readOnly = true)
 public class RestaurantService {
-    private static final String NOTFOUND = "Restaurant not found with id ";
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMapper mapper;
 
     public RestaurantTO get(int id) {
         log.info("Getting a restaurant with id {}", id);
-        Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id));
-        return mapper.getDTO(restaurant);
+        return mapper.getDTO(getFound(restaurantRepository.findById(id)));
     }
 
     public RestaurantWithMenuTO getWithMenu(int id) {
         log.info("Getting a restaurant with id {} with menu", id);
-        return mapper.getWithMenuDTO(restaurantRepository.findWithMenu(id, LocalDate.now())
-                .orElseThrow(() -> new EntityNotFoundException(NOTFOUND + id)));
+        return mapper.getWithMenuDTO(getFound(restaurantRepository.findWithMenu(id, LocalDate.now())));
     }
 
     @Cacheable("restaurants")
@@ -56,11 +52,10 @@ public class RestaurantService {
         return mapper.getWithMenuDTO(restaurantRepository.getAllWithMenus(LocalDate.now()));
     }
 
-    @Transactional
-    @Modifying
+
     @CacheEvict(allEntries = true)
     public RestaurantTO save(RestaurantTO restaurantTO) {
-        log.info("Saving restaurant with id {}", restaurantTO.getId());
+        log.info("Saving restaurant");
         Assert.notNull(restaurantTO, "Restaurant must not be null");
         return mapper.getDTO(restaurantRepository.save(mapper.getEntity(restaurantTO)));
     }
@@ -72,13 +67,10 @@ public class RestaurantService {
         int id = restaurantTO.getId();
         log.info("Updating restaurant with id {}", restaurantTO.getId());
         Assert.notNull(restaurantTO, "Restaurant must not be null");
-        restaurantRepository.findById(id).orElseThrow(
-                () -> new IllegalRequestDataException(NOTFOUND + id));
+        getFound(restaurantRepository.findById(id));
         restaurantRepository.save(mapper.getEntity(restaurantTO));
     }
 
-    @Transactional
-    @Modifying
     @CacheEvict(allEntries = true)
     public void delete(int id) {
         log.info("Deleting restaurant with id {}", id);

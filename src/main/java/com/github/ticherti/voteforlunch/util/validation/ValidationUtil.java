@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 
+import java.util.Optional;
+
 @UtilityClass
 public class ValidationUtil {
 
@@ -35,5 +37,10 @@ public class ValidationUtil {
     public static Throwable getRootCause(@NonNull Throwable t) {
         Throwable rootCause = NestedExceptionUtils.getRootCause(t);
         return rootCause != null ? rootCause : t;
+    }
+
+    public static <T> T getFound(Optional<T> t){
+        return t.orElseThrow(
+                () -> new IllegalRequestDataException("Entity's not found"));
     }
 }

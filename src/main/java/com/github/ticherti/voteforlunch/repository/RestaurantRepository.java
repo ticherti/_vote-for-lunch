@@ -1,6 +1,5 @@
 package com.github.ticherti.voteforlunch.repository;
 
-import com.github.ticherti.voteforlunch.exception.IllegalRequestDataException;
 import com.github.ticherti.voteforlunch.model.Restaurant;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
