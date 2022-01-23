@@ -18,7 +18,7 @@ import java.sql.SQLException;
 @Slf4j
 @EnableCaching
 public class AppConfig {
-    //todo try this for mapstruck problem
+
     @Bean(initMethod = "start", destroyMethod = "stop")
     @Profile("!test")
     Server h2Server() throws SQLException {

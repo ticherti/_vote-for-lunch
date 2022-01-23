@@ -1,7 +1,7 @@
 package com.github.ticherti.voteforlunch.web.user;
 
 import com.github.ticherti.voteforlunch.HasIdAndEmail;
-import com.github.ticherti.voteforlunch.service.UserService;
+import com.github.ticherti.voteforlunch.repository.UserRepository;
 import com.github.ticherti.voteforlunch.web.GlobalExceptionHandler;
 import com.github.ticherti.voteforlunch.web.SecurityUtil;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 @AllArgsConstructor
 public class UniqueMailValidator implements org.springframework.validation.Validator {
 
-    private final UserService service;
+    private final UserRepository repository;
     private final HttpServletRequest request;
 
     @Override
@@ -28,7 +28,7 @@ public class UniqueMailValidator implements org.springframework.validation.Valid
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         HasIdAndEmail user = ((HasIdAndEmail) target);
         if (StringUtils.hasText(user.getEmail())) {
-            service.getByEmail(user.getEmail().toLowerCase())
+            repository.getByEmail(user.getEmail().toLowerCase())
                     .ifPresent(dbUser -> {
                         if (request.getMethod().equals("PUT")) {  // UPDATE
                             int dbId = dbUser.id();

@@ -1,8 +1,8 @@
 package com.github.ticherti.voteforlunch.web.user;
 
 import com.github.ticherti.voteforlunch.dto.UserTO;
+import com.github.ticherti.voteforlunch.mapper.UserMapper;
 import com.github.ticherti.voteforlunch.model.User;
-import com.github.ticherti.voteforlunch.service.UserService;
 import com.github.ticherti.voteforlunch.web.AuthUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +16,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.assureIdConsistent;
-import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.checkNew;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +23,8 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.ch
 public class ProfileController extends AbstractUserController {
 
     static final String REST_URL = "/api/profile";
-    private final UserService userService;
+
+    private final UserMapper mapper;
 
     @GetMapping
     public User get(@AuthenticationPrincipal AuthUser authUser) {
@@ -34,19 +32,10 @@ public class ProfileController extends AbstractUserController {
         return authUser.getUser();
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@AuthenticationPrincipal AuthUser authUser) {
-        log.info("Deleting by auth user");
-        userService.delete(authUser.id());
-    }
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> register(@Valid @RequestBody UserTO userTo) {
-        log.info("register {}", userTo);
-        checkNew(userTo);
-        User created = userService.save(userTo);
+    public ResponseEntity<User> register(@Valid @RequestBody UserTO userTO) {
+        User created = super.save(mapper.getNewEntity(userTO));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL).build().toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
@@ -54,11 +43,13 @@ public class ProfileController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody @Valid UserTO userTo, @AuthenticationPrincipal AuthUser authUser) {
-        log.info("Update {}", userTo);
-        assureIdConsistent(userTo, authUser.id());
-        User user = authUser.getUser();
-        userService.update(userTo, user);
+    public void update(@RequestBody @Valid UserTO userTO, @AuthenticationPrincipal AuthUser authUser) {
+        super.update(mapper.updateFromTo(authUser.getUser(), userTO), authUser.id());
     }
 
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@AuthenticationPrincipal AuthUser authUser) {
+        super.delete(authUser.id());
+    }
 }
