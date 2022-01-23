@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @UtilityClass
@@ -41,6 +42,6 @@ public class ValidationUtil {
 
     public static <T> T getFound(Optional<T> t){
         return t.orElseThrow(
-                () -> new IllegalRequestDataException("Entity's not found"));
+                () -> new EntityNotFoundException("Entity's not found"));
     }
 }

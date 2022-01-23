@@ -3,7 +3,7 @@ package com.github.ticherti.voteforlunch.web.vote;
 import com.github.ticherti.voteforlunch.dto.VoteTO;
 import com.github.ticherti.voteforlunch.mapper.VoteMapper;
 import com.github.ticherti.voteforlunch.repository.VoteRepository;
-import com.github.ticherti.voteforlunch.util.TimeUtil;
+import com.github.ticherti.voteforlunch.util.DateTimeUtil;
 import com.github.ticherti.voteforlunch.web.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class VoteControllerTest extends AbstractControllerTest {
     @Autowired
     private VoteMapper mapper;
     @Autowired
-    private TimeUtil timeUtil;
+    private DateTimeUtil dateTimeUtil;
 
     @Test
     @WithUserDetails(value = USER_MAIL)
@@ -46,7 +46,7 @@ class VoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void createWithLocation() throws Exception {
-        VoteTO newVote = VoteTestData.getNew();
+        VoteTO newVote = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .param("restaurantId", String.valueOf(PARK_CAFE_ID)))
                 .andExpect(status().isCreated());
@@ -60,22 +60,22 @@ class VoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_MAIL)
     void update() throws Exception {
-        VoteTO updated = VoteTestData.getUpdated();
+        VoteTO updated = getUpdated();
         updated.setId(null);
-        timeUtil.setTimeLimit(LocalTime.now().plusSeconds(1));
+        dateTimeUtil.setTimeLimit(LocalTime.now().plusSeconds(1));
 
         perform(MockMvcRequestBuilders.put(REST_URL)
                 .param("restaurantId", String.valueOf(JOE_CAFE_ID)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        VOTE_TO_MATCHER.assertMatch(mapper.getDTO(voteRepository.getById(USER_VOTE_ID)), VoteTestData.getUpdated());
+        VOTE_TO_MATCHER.assertMatch(mapper.getDTO(voteRepository.getById(USER_VOTE_ID)), getUpdated());
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     void updateAfter() throws Exception {
-        timeUtil.setTimeLimit(LocalTime.now().minusSeconds(1));
+        dateTimeUtil.setTimeLimit(LocalTime.now().minusSeconds(1));
 
         perform(MockMvcRequestBuilders.put(REST_URL)
                 .param("restaurantId", String.valueOf(JOE_CAFE_ID)))

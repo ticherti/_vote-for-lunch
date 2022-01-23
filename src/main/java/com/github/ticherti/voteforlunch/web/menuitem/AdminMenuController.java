@@ -5,6 +5,7 @@ import com.github.ticherti.voteforlunch.mapper.MenuItemMapper;
 import com.github.ticherti.voteforlunch.model.MenuItem;
 import com.github.ticherti.voteforlunch.repository.MenuItemRepository;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
+import com.github.ticherti.voteforlunch.util.DateTimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -37,6 +38,7 @@ public class AdminMenuController {
     private final MenuItemRepository menuItemRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemMapper mapper;
+    private final DateTimeUtil dateUtil;
 
     @GetMapping("/{id}")
     public MenuItemTO get(@PathVariable int restaurantId, @PathVariable int id) {
@@ -48,8 +50,7 @@ public class AdminMenuController {
     public List<MenuItemTO> getAllByDate(@PathVariable int restaurantId,
                                          @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("Getting the menu for the restaurant {}", restaurantId);
-        date = (date == null) ? LocalDate.now() : date;
-        return mapper.getDTO(menuItemRepository.getAllByRestaurantAndDate(restaurantId, date));
+        return mapper.getDTO(menuItemRepository.getAllByRestaurantAndDate(restaurantId, dateUtil.getCheckedDate(date)));
     }
 
     @Transactional

@@ -57,7 +57,7 @@ class AdminMenuControllerTest extends AbstractControllerTest {
 
     @Test
     void createWithLocation() throws Exception {
-        MenuItemTO newItem = MenuItemTestData.getNew();
+        MenuItemTO newItem = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL, PARK_CAFE_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newItem)))
@@ -81,7 +81,7 @@ class AdminMenuControllerTest extends AbstractControllerTest {
 
     @Test
     void update() throws Exception {
-        MenuItemTO updated = MenuItemTestData.getUpdated();
+        MenuItemTO updated = getUpdated();
         updated.setId(null);
 
         perform(MockMvcRequestBuilders.put(REST_URL + PARK_BURGER_ID, PARK_CAFE_ID)
@@ -90,7 +90,7 @@ class AdminMenuControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        MENU_ITEM_TO_MATCHER.assertMatch(mapper.getDTO(repository.getById(PARK_BURGER_ID)), MenuItemTestData.getUpdated());
+        MENU_ITEM_TO_MATCHER.assertMatch(mapper.getDTO(repository.getById(PARK_BURGER_ID)), getUpdated());
     }
 
     @Test

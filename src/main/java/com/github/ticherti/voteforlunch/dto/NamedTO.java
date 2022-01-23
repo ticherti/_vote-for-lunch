@@ -1,7 +1,6 @@
 package com.github.ticherti.voteforlunch.dto;
 
 import com.github.ticherti.voteforlunch.util.validation.NoHtml;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

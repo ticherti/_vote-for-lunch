@@ -1,7 +1,6 @@
 package com.github.ticherti.voteforlunch.dto;
 
 import com.github.ticherti.voteforlunch.model.BaseEntity;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;

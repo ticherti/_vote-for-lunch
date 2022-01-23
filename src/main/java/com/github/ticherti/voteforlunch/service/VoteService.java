@@ -7,7 +7,7 @@ import com.github.ticherti.voteforlunch.model.User;
 import com.github.ticherti.voteforlunch.model.Vote;
 import com.github.ticherti.voteforlunch.repository.RestaurantRepository;
 import com.github.ticherti.voteforlunch.repository.VoteRepository;
-import com.github.ticherti.voteforlunch.util.TimeUtil;
+import com.github.ticherti.voteforlunch.util.DateTimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,7 +26,7 @@ import static com.github.ticherti.voteforlunch.util.validation.ValidationUtil.ge
 @Slf4j
 public class VoteService {
 
-    private final TimeUtil timeUtil;
+    private final DateTimeUtil dateTimeUtil;
     private final VoteRepository voteRepository;
     private final RestaurantRepository restaurantRepository;
     private final VoteMapper mapper;
@@ -45,7 +45,7 @@ public class VoteService {
 
         Optional<Vote> existed = voteRepository.getByDateAndUserId(user.id(), LocalDate.now());
         Vote vote = existed.isEmpty() ? new Vote() : existed.get();
-        if (existed.isPresent() && currentTime.isAfter(timeUtil.getTimeLimit())) {
+        if (existed.isPresent() && currentTime.isAfter(dateTimeUtil.getTimeLimit())) {
             throw new TooLateToModifyException(currentTime);
         }
         vote.setUser(user);

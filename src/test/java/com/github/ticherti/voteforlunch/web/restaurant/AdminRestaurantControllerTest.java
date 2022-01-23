@@ -55,7 +55,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     void createWithLocation() throws Exception {
-        RestaurantTO newRestaurant = RestaurantTestData.getNew();
+        RestaurantTO newRestaurant = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newRestaurant)))
@@ -71,7 +71,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     void createNotNew() throws Exception {
         RestaurantTO newRestaurant = RestaurantTestData.getNew();
         newRestaurant.setId(NOT_FOUND);
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+        perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newRestaurant)))
                 .andExpect(status().isUnprocessableEntity());
@@ -80,16 +80,16 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     void update() throws Exception {
-        RestaurantTO updated = RestaurantTestData.getUpdated();
+        RestaurantTO updated = getUpdated();
         updated.setId(null);
 
-        ResultActions action = perform(MockMvcRequestBuilders.put(REST_URL + PARK_CAFE_ID)
+        perform(MockMvcRequestBuilders.put(REST_URL + PARK_CAFE_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        RESTAURANT_TO_MATCHER.assertMatch(mapper.getDTO(repository.getById(PARK_CAFE_ID)), RestaurantTestData.getUpdated());
+        RESTAURANT_TO_MATCHER.assertMatch(mapper.getDTO(repository.getById(PARK_CAFE_ID)), getUpdated());
     }
 
     @Test
@@ -101,7 +101,7 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isNotFound());
     }
 
     @Test
